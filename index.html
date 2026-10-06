@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#151920">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Starcatcher Stage Manager</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div><div class="eyebrow">STAGE MANAGER</div><h1 id="productionTitle">Peter and the Starcatcher</h1></div>
+    <button id="installBtn" class="ghost small" hidden>Install</button>
+  </header>
+  <main id="view" aria-live="polite"></main>
+  <nav class="bottomnav" aria-label="Main navigation">
+    <button data-view="home" class="navbtn active"><span>⌂</span>Home</button>
+    <button data-view="act1" class="navbtn"><span>Ⅰ</span>Act I</button>
+    <button data-view="run" class="navbtn"><span>▶</span>Run</button>
+    <button data-view="change" class="navbtn"><span>⇄</span>Change</button>
+    <button data-view="act2" class="navbtn"><span>Ⅱ</span>Act II</button>
+    <button data-view="edit" class="navbtn"><span>✎</span>Edit</button>
+  </nav>
+</div>
+<dialog id="photoDialog"><button id="closePhoto" class="dialog-close" aria-label="Close photo">×</button><img id="photoFull" alt="Preset reference"><div id="photoCaption"></div></dialog>
+<dialog id="formDialog"><form id="editForm" method="dialog"><div id="formFields"></div><div class="dialog-actions"><button value="cancel" class="ghost">Cancel</button><button id="saveEdit" value="default" class="primary">Save</button></div></form></dialog>
+<input id="importFile" type="file" accept=".json,.stage,application/json" hidden>
+<script src="app.js"></script>
+</body>
+</html>
