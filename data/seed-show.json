@@ -1,6 +1,6 @@
 {
   "schemaVersion": 4,
-  "appVersion": "0.5.1",
+  "appVersion": "0.5.5",
   "imageBundleVersion": "2026-10-06-c",
   "production": {
     "title": "Peter and the Starcatcher",
@@ -4596,7 +4596,9 @@
       "missing",
       "excused",
       "notcalled"
-    ]
+    ],
+    "canonicalPropsRevision": 2,
+    "canonicalPropsAuthority": "Backstage Props List - October 2026"
   },
   "acts": [
     {

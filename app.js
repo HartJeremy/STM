@@ -1,4 +1,4 @@
-const APP_VERSION = '0.5.4';
+const APP_VERSION = '0.5.5';
 const DB_NAME = 'starcatcher-sm';
 const DB_VERSION = 3;
 const WORKSPACE_KEY = 'workspace-v5';
@@ -249,6 +249,49 @@ function mergeImageMeta(a = {}, b = {}) {
   };
 }
 
+function normalizePropName(value){
+  return String(value||'').trim().toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ');
+}
+
+function syncAuthoritativePropsFromSeed(){
+  const seedProd=starterWorkspace?.productions?.find(p=>p.production?.title===showData?.production?.title) || starterWorkspace?.productions?.[0];
+  if(!showData||!seedProd||showData.settings?.canonicalPropsRevision>=2)return false;
+  const localByName=new Map((showData.props||[]).map(p=>[normalizePropName(p.name),p]));
+  const idMap=new Map();
+  const canonical=(seedProd.props||[]).map(seedProp=>{
+    const local=localByName.get(normalizePropName(seedProp.name));
+    if(local?.id)idMap.set(local.id,seedProp.id);
+    return {
+      ...clone(seedProp),
+      ready:local?.ready ?? seedProp.ready ?? false,
+      review:local?.review ?? seedProp.review ?? false,
+      notes:local?.notes ?? seedProp.notes ?? '',
+      assetId:local?.assetId ?? seedProp.assetId ?? null,
+      updatedAt:now()
+    };
+  });
+  const canonicalByName=new Map(canonical.map(p=>[normalizePropName(p.name),p]));
+  for(const row of showData.movements||[]){
+    const mapped=idMap.get(row.propId) || canonicalByName.get(normalizePropName(row.propName))?.id;
+    if(mapped)row.propId=mapped;
+  }
+  for(const row of showData.presets||[]){
+    const mapped=idMap.get(row.propId) || canonicalByName.get(normalizePropName(row.item))?.id;
+    if(mapped)row.propId=mapped;
+    else if(row.propId && !canonical.some(p=>p.id===row.propId))row.propId='';
+  }
+  showData.props=canonical;
+  for(const row of showData.movements||[]){
+    const prop=canonical.find(p=>p.id===row.propId);
+    if(prop)row.propName=prop.name;
+  }
+  showData.settings ||= {};
+  showData.settings.canonicalPropsRevision=2;
+  showData.settings.canonicalPropsAuthority='Backstage Props List - October 2026';
+  showData.updatedAt=now();
+  return true;
+}
+
 
 function loadShowTimer(){
   try{
@@ -348,6 +391,7 @@ async function init() {
     await setKV(WORKSPACE_KEY,workspaceData);
   } else workspaceData=ensureWorkspaceStructure(workspaceData);
   setActiveRefs(); if(!showData){workspaceData=clone(starterWorkspace);setActiveRefs();await setKV(WORKSPACE_KEY,workspaceData);}
+  if(syncAuthoritativePropsFromSeed())await setKV(WORKSPACE_KEY,workspaceData);
   $('#productionTitle').textContent=showData.production?.title||'Stage Manager'; bindShell(); route('tonight'); registerSW();
 }
 

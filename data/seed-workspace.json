@@ -1,6 +1,6 @@
 {
   "schemaVersion": 5,
-  "appVersion": "0.5.1",
+  "appVersion": "0.5.5",
   "workspaceId": "60a8251a-59d1-59e4-9d05-9c67d886104c",
   "organization": {
     "id": "53bdc4f8-6da8-512e-b0c6-d132fd4ae425",
@@ -11,7 +11,7 @@
   "productions": [
     {
       "schemaVersion": 5,
-      "appVersion": "0.5.1",
+      "appVersion": "0.5.5",
       "imageBundleVersion": "2026-10-06-c",
       "production": {
         "title": "Peter and the Starcatcher",
@@ -5270,7 +5270,9 @@
           "missing",
           "excused",
           "notcalled"
-        ]
+        ],
+        "canonicalPropsRevision": 2,
+        "canonicalPropsAuthority": "Backstage Props List - October 2026"
       },
       "acts": [
         {
