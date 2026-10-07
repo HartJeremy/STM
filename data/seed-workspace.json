@@ -214,11 +214,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 1,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "2b4461ad-5fce-5baa-a547-bf2383f48ebc",
-          "name": "2 blue ropes",
+          "name": "blue ropes",
           "ready": false,
           "notes": "",
           "review": false,
@@ -227,11 +229,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 2,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 2,
+          "instances": []
         },
         {
           "id": "86a1be85-195a-5453-804c-143883355a2f",
-          "name": "1 ladder",
+          "name": "ladder",
           "ready": false,
           "notes": "",
           "review": false,
@@ -240,7 +244,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 3,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "f1b498c5-9c3d-5a4e-995a-a56461d2e7cc",
@@ -253,7 +259,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 4,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "a50d840a-ca59-573f-af45-95af394c11b6",
@@ -266,11 +274,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 5,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "cb1f30e4-bdcf-5884-8802-5a82c4f3e7ab",
-          "name": "2 amulets",
+          "name": "amulets",
           "ready": false,
           "notes": "",
           "review": false,
@@ -279,11 +289,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 6,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 2,
+          "instances": []
         },
         {
           "id": "fabd1f18-4241-50e7-be87-6d96331a5267",
-          "name": "10 penlights",
+          "name": "penlights",
           "ready": false,
           "notes": "",
           "review": false,
@@ -292,7 +304,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 7,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 10,
+          "instances": []
         },
         {
           "id": "2620a4fb-6815-5580-8b00-526785ed6318",
@@ -305,7 +319,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 8,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "b64d2e27-7777-5e7c-a930-c547a71fb5b5",
@@ -318,7 +334,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 9,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "c1850d76-c544-5dcf-8fa9-f000f470a399",
@@ -331,7 +349,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 10,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "01bf8c4f-462a-5e7c-986e-3d0defdf04d5",
@@ -344,7 +364,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 11,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "4091c125-2a85-51d7-ab19-c9769cd22584",
@@ -357,7 +379,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 12,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "c0231736-81be-59df-8005-7b8c9e96f0f2",
@@ -370,7 +394,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 13,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "4b537aa6-c995-5957-8140-8d0e5d1df096",
@@ -383,7 +409,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 14,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "ef6b5223-d0eb-5785-9c7a-8a0d8fc1deb8",
@@ -396,11 +424,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 15,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "e605ecc5-794f-5790-a3b3-5c8b1482db1b",
-          "name": "2 poison cakes",
+          "name": "poison cakes",
           "ready": false,
           "notes": "",
           "review": false,
@@ -409,11 +439,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 16,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 2,
+          "instances": []
         },
         {
           "id": "71214d12-ccab-532d-8da1-f3045ab07deb",
-          "name": "4 Mollusk weapons",
+          "name": "Mollusk weapons",
           "ready": false,
           "notes": "",
           "review": false,
@@ -422,7 +454,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 17,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 4,
+          "instances": []
         },
         {
           "id": "bd61b546-6ed2-531b-8edd-27f6d9b6755b",
@@ -435,7 +469,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 18,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "be054cd9-6c0c-5e72-a7f5-72ec3cb9d781",
@@ -448,7 +484,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 19,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "481f21ea-5a48-5f72-9dfa-e7a570332824",
@@ -461,7 +499,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 20,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "2a66284f-9778-552b-bf17-c8f8d96491ae",
@@ -474,11 +514,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 21,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "5dfeece3-0cb7-5353-b18c-843ef929c537",
-          "name": "6 umbrellas",
+          "name": "umbrellas",
           "ready": false,
           "notes": "",
           "review": false,
@@ -487,7 +529,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 22,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 6,
+          "instances": []
         },
         {
           "id": "7adae2d3-6845-57ed-8c9d-4cb298f5a53c",
@@ -500,7 +544,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 23,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "d795fdb9-cc22-5e51-bbe7-5c35c8edcddc",
@@ -513,7 +559,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 24,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "54cce79d-f5ef-53c1-98c3-5fce724b67d3",
@@ -526,7 +574,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 25,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "a6eadb64-591c-571c-982c-2e431b66eea3",
@@ -539,7 +589,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 26,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "460f8fc5-dcd4-5028-86f8-d96a564cad2e",
@@ -552,7 +604,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 27,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "2b97a9b3-60c6-5e5a-9a64-9588cd14767b",
@@ -565,7 +619,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 28,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "4f0ea9cb-56a5-5259-be3e-0931b346acf5",
@@ -578,7 +634,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 29,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "c1f92e4e-82b2-5193-9b20-d0e6de887334",
@@ -591,7 +649,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 30,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "385bca59-1b36-540b-bd49-1fb388e07e25",
@@ -604,7 +664,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 31,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "4add636e-d73b-5247-a3e3-6adfb8d516af",
@@ -617,11 +679,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 32,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "5b2ae618-f61a-5a8d-bd5b-169374f7b3c4",
-          "name": "5 penlights",
+          "name": "penlights",
           "ready": false,
           "notes": "",
           "review": false,
@@ -630,7 +694,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 33,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 5,
+          "instances": []
         },
         {
           "id": "5fa89d7b-0b43-5ee3-9f38-4a5cf839862b",
@@ -643,7 +709,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 34,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "52eda4b4-df9d-5f50-abf7-525ee94d4bc8",
@@ -656,7 +724,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 35,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "1f320415-7011-5dcc-a7af-06fc90536b7b",
@@ -669,7 +739,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 36,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "4d006705-e548-5152-ac74-cf6557d3fded",
@@ -682,7 +754,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 37,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "7c3a0440-cf86-57b7-a7e5-a9a9a587fe06",
@@ -695,11 +769,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 38,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "a3e3fd6f-3164-5e7e-a543-2bab69b33e31",
-          "name": "7 Mollusk weapons",
+          "name": "Mollusk weapons",
           "ready": false,
           "notes": "",
           "review": false,
@@ -708,7 +784,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 39,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 7,
+          "instances": []
         },
         {
           "id": "a1ab1a0f-3e53-5d29-a303-b51e3bbcce05",
@@ -721,11 +799,13 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 40,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "c55d3d6b-19fa-58e4-bc82-337512e4f342",
-          "name": "4 finger lights",
+          "name": "finger lights",
           "ready": false,
           "notes": "",
           "review": false,
@@ -734,7 +814,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 41,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 4,
+          "instances": []
         },
         {
           "id": "b3a9d836-8ee7-572e-ad95-ed905cc02ab2",
@@ -747,7 +829,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 42,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "18c71893-f9d8-5f82-b80a-4d625976bb1d",
@@ -760,7 +844,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 43,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "73b89067-74aa-5e50-b301-096a84e69166",
@@ -773,7 +859,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 44,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "f216d6ae-e811-5d7b-9514-8f2994741493",
@@ -786,7 +874,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 45,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "1912755c-f71f-5059-93ff-151e83dcb508",
@@ -799,7 +889,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 46,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "be255a33-f181-5ff9-9df0-a5c57afd8025",
@@ -812,24 +904,28 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 47,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "2dd59a00-8dc3-5969-9703-7767b2b68d73",
-          "name": "4 umbrellas (1 extra)",
+          "name": "umbrellas",
           "ready": false,
-          "notes": "",
+          "notes": "1 extra.",
           "review": false,
           "startAct": "Act II",
           "startLocation": "Stage Left",
           "source": "Backstage Props List - October 2026",
           "sourceRow": 48,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 4,
+          "instances": []
         },
         {
           "id": "722fc9b5-a269-5145-8f82-b6183d4182ee",
-          "name": "7 topiaries",
+          "name": "topiaries",
           "ready": false,
           "notes": "",
           "review": false,
@@ -838,7 +934,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 49,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 7,
+          "instances": []
         },
         {
           "id": "1481eac6-c9a7-5f67-b2b9-39a8f6972037",
@@ -851,7 +949,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 50,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         },
         {
           "id": "0f34eb32-5917-54ad-bc5b-de1cc272e157",
@@ -864,7 +964,9 @@
           "source": "Backstage Props List - October 2026",
           "sourceRow": 51,
           "assetId": null,
-          "updatedAt": "2026-10-07T16:33:00-04:00"
+          "updatedAt": "2026-10-07T16:33:00-04:00",
+          "quantity": 1,
+          "instances": []
         }
       ],
       "movements": [
@@ -5991,7 +6093,8 @@
       ],
       "checks": {},
       "setPieces": [],
-      "blocking": []
+      "blocking": [],
+      "propGroups": []
     }
   ],
   "people": [
