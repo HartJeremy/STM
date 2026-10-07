@@ -1,4 +1,4 @@
-const APP_VERSION = '0.5.0';
+const APP_VERSION = '0.5.4';
 const DB_NAME = 'starcatcher-sm';
 const DB_VERSION = 3;
 const WORKSPACE_KEY = 'workspace-v5';
@@ -21,6 +21,11 @@ let deferredPrompt = null;
 let imageUrlCache = new Map();
 let pendingImageAction = null;
 let pendingPhotoPicker = null;
+
+const TIMER_STORAGE_KEY = 'show-call-timer-v1';
+let showTimer = loadShowTimer();
+let showTimerTick = null;
+let timerAudioContext = null;
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -244,6 +249,96 @@ function mergeImageMeta(a = {}, b = {}) {
   };
 }
 
+
+function loadShowTimer(){
+  try{
+    const raw=localStorage.getItem(TIMER_STORAGE_KEY);
+    const parsed=raw?JSON.parse(raw):null;
+    if(parsed && typeof parsed==='object') return {...{durationSec:0,endAt:0,remainingSec:0,running:false,fiveCalled:false,placesCalled:false,lastCall:''},...parsed};
+  }catch(e){}
+  return {durationSec:0,endAt:0,remainingSec:0,running:false,fiveCalled:false,placesCalled:false,lastCall:''};
+}
+function saveShowTimer(){ try{localStorage.setItem(TIMER_STORAGE_KEY,JSON.stringify(showTimer));}catch(e){} }
+function timerRemainingSec(){
+  if(showTimer.running && showTimer.endAt) return Math.max(0,Math.ceil((showTimer.endAt-Date.now())/1000));
+  return Math.max(0,Number(showTimer.remainingSec||0));
+}
+function formatTimer(sec){sec=Math.max(0,Math.floor(sec));return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
+function ensureTimerLoop(){
+  if(showTimerTick) return;
+  showTimerTick=setInterval(tickShowTimer,250);
+}
+function stopTimerLoop(){if(showTimerTick){clearInterval(showTimerTick);showTimerTick=null;}}
+function requestTimerNotifications(){
+  if(!('Notification' in window) || Notification.permission!=='default') return;
+  Notification.requestPermission().catch(()=>{});
+}
+function beepTimer(kind){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    timerAudioContext ||= new AC(); if(timerAudioContext.state==='suspended')timerAudioContext.resume();
+    const osc=timerAudioContext.createOscillator(),gain=timerAudioContext.createGain(),t=timerAudioContext.currentTime;
+    osc.type='sine';osc.frequency.value=kind==='places'?880:660;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.18,t+.02);gain.gain.exponentialRampToValueAtTime(.0001,t+.45);osc.connect(gain);gain.connect(timerAudioContext.destination);osc.start(t);osc.stop(t+.48);
+  }catch(e){}
+}
+function showTimerCall(kind){
+  const title=kind==='places'?'PLACES':'5 MINUTES TO PLACES';
+  const body=kind==='places'?'Places.':'Five minutes to places.';
+  showTimer.lastCall=title; saveShowTimer(); beepTimer(kind);
+  if(navigator.vibrate) navigator.vibrate(kind==='places'?[250,100,250]:[180]);
+  try{if('Notification' in window && Notification.permission==='granted')new Notification(title,{body,tag:`stage-manager-${kind}`,renotify:true});}catch(e){}
+  if(currentView==='timer') updateTimerDisplay();
+}
+function tickShowTimer(){
+  if(!showTimer.running){stopTimerLoop();return;}
+  const remaining=timerRemainingSec(); showTimer.remainingSec=remaining;
+  if(!showTimer.fiveCalled && remaining>0 && remaining<=300 && showTimer.durationSec>=300){showTimer.fiveCalled=true;showTimerCall('five');}
+  if(remaining<=0){showTimer.running=false;showTimer.remainingSec=0;if(!showTimer.placesCalled){showTimer.placesCalled=true;showTimerCall('places');}saveShowTimer();stopTimerLoop();}
+  else saveShowTimer();
+  if(currentView==='timer') updateTimerDisplay();
+  updateTimerButton();
+}
+function startShowTimer(minutes){
+  const seconds=Math.max(1,Math.round(Number(minutes)*60));
+  showTimer={durationSec:seconds,endAt:Date.now()+seconds*1000,remainingSec:seconds,running:true,fiveCalled:false,placesCalled:false,lastCall:''};
+  saveShowTimer();requestTimerNotifications();ensureTimerLoop();
+  if(seconds===300){showTimer.fiveCalled=true;showTimerCall('five');}
+  updateTimerDisplay();updateTimerButton();
+}
+function pauseShowTimer(){
+  if(!showTimer.running)return; showTimer.remainingSec=timerRemainingSec();showTimer.running=false;showTimer.endAt=0;saveShowTimer();stopTimerLoop();updateTimerDisplay();updateTimerButton();
+}
+function resumeShowTimer(){
+  if(showTimer.running||!showTimer.remainingSec)return;showTimer.running=true;showTimer.endAt=Date.now()+showTimer.remainingSec*1000;saveShowTimer();ensureTimerLoop();updateTimerDisplay();updateTimerButton();
+}
+function cancelShowTimer(){
+  showTimer={durationSec:0,endAt:0,remainingSec:0,running:false,fiveCalled:false,placesCalled:false,lastCall:''};saveShowTimer();stopTimerLoop();updateTimerDisplay();updateTimerButton();
+}
+function updateTimerButton(){
+  const btn=$('#timerBtn');if(!btn)return;const remaining=timerRemainingSec();btn.textContent=(showTimer.running||remaining)?`⏱ ${formatTimer(remaining)}`:'⏱ Timer';btn.classList.toggle('timer-active',showTimer.running);
+}
+function timerPermissionText(){
+  if(!('Notification' in window))return 'System notifications are not supported here. In-app sound and vibration will still be used when available.';
+  if(Notification.permission==='granted')return 'System notifications are enabled.';
+  if(Notification.permission==='denied')return 'System notifications are blocked. In-app sound and vibration will still be used when available.';
+  return 'Starting a timer will ask for notification permission so calls can appear outside the app when supported.';
+}
+function renderTimer(){
+  setPageTitle('Show Timer');
+  const remaining=timerRemainingSec(),active=showTimer.running||remaining>0;
+  $('#view').innerHTML=`<section class="timer-panel"><div class="eyebrow">Show call countdown</div><div id="timerClock" class="timer-clock">${formatTimer(remaining)}</div><div id="timerStatus" class="timer-status">${showTimer.running?'Running':remaining>0?'Paused':'Ready'}</div><div id="timerCall" class="timer-call ${showTimer.lastCall?'show':''}">${esc(showTimer.lastCall||'')}</div><div class="timer-quick"><button class="timer-start" data-timer-min="5">5 min</button><button class="timer-start" data-timer-min="10">10 min</button><button class="timer-start" data-timer-min="15">15 min</button></div><div class="timer-actions"><button id="pauseTimer" class="btn secondary" ${!showTimer.running?'hidden':''}>Pause</button><button id="resumeTimer" class="btn primary" ${showTimer.running||!remaining?'hidden':''}>Resume</button><button id="cancelTimer" class="btn danger" ${!active?'hidden':''}>Cancel</button></div><div class="timer-sequence"><div><strong>5:00 remaining</strong><span>5 minutes to places</span></div><div><strong>0:00</strong><span>Places</span></div></div><p id="timerPermission" class="filemeta">${esc(timerPermissionText())}</p></section>`;
+  $$('[data-timer-min]').forEach(b=>b.addEventListener('click',()=>startShowTimer(Number(b.dataset.timerMin))));
+  $('#pauseTimer')?.addEventListener('click',pauseShowTimer);$('#resumeTimer')?.addEventListener('click',resumeShowTimer);$('#cancelTimer')?.addEventListener('click',cancelShowTimer);
+  updateTimerDisplay();
+}
+function updateTimerDisplay(){
+  const clock=$('#timerClock');if(!clock)return;const remaining=timerRemainingSec();clock.textContent=formatTimer(remaining);
+  const status=$('#timerStatus');if(status)status.textContent=showTimer.running?'Running':remaining>0?'Paused':showTimer.placesCalled?'Complete':'Ready';
+  const call=$('#timerCall');if(call){call.textContent=showTimer.lastCall||'';call.classList.toggle('show',!!showTimer.lastCall);call.classList.toggle('places',showTimer.lastCall==='PLACES');}
+  const pause=$('#pauseTimer'),resume=$('#resumeTimer'),cancel=$('#cancelTimer');if(pause)pause.hidden=!showTimer.running;if(resume)resume.hidden=showTimer.running||!remaining;if(cancel)cancel.hidden=!(showTimer.running||remaining);
+  const perm=$('#timerPermission');if(perm)perm.textContent=timerPermissionText();
+}
+
 async function init() {
   db=await openDB(); starterWorkspace=ensureWorkspaceStructure(await (await fetch('data/seed-workspace.json',{cache:'no-store'})).json());
   workspaceData=await getKV(WORKSPACE_KEY);
@@ -258,6 +353,9 @@ async function init() {
 
 function bindShell() {
   $$('.navbtn').forEach(btn => btn.addEventListener('click', () => route(btn.dataset.view)));
+  $('#timerBtn').addEventListener('click',()=>route('timer'));
+  updateTimerButton();
+  if(showTimer.running){ensureTimerLoop();tickShowTimer();}
   $('#closePhoto').addEventListener('click', () => $('#photoDialog').close());
   $('#photoDialog').addEventListener('click', e => { if (e.target === $('#photoDialog')) $('#photoDialog').close(); });
   $('#closeForm').addEventListener('click', () => $('#formDialog').close());
@@ -293,7 +391,8 @@ function setPageTitle(title) {
 
 function route(view) {
   currentView=view; $$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
-  if(view==='tonight')renderTonight(); else if(view==='presets')renderPresets(); else if(view==='run')renderRun(); else if(view==='checkin')renderCheckin(); else if(view==='shows')renderShows(); else if(view==='manage')renderManage(); else renderTonight();
+  if(view==='tonight')renderTonight(); else if(view==='timer')renderTimer(); else if(view==='presets')renderPresets(); else if(view==='run')renderRun(); else if(view==='checkin')renderCheckin(); else if(view==='shows')renderShows(); else if(view==='manage')renderManage(); else renderTonight();
+  updateTimerButton();
   window.scrollTo({top:0,behavior:'auto'});
 }
 
@@ -557,9 +656,16 @@ function renderManageRun(){const rows=(showData.movements||[]).slice().sort(move
 
 function openMoveForm(x={}){const props=(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),locs=[['','— Unspecified / free text —'],...locationOptions()];openForm(x.id?'Edit movement':'Add movement',[['propId','Prop','select',x.propId||props[0]?.id||'',props.map(p=>[p.id,p.name])],['act','Act / section','select',x.act||sortedActs()[0]?.id||'',actOptions(true)],['scene','Scene','text',x.scene||''],['page','Page','text',x.page||''],['person','Who','text',x.person||''],['fromLocationId','From location (optional)','select',x.fromLocationId||'',locs],['from','From / instruction','text',x.from||''],['toLocationId','To location (optional)','select',x.toLocationId||'',locs],['to','To / instruction','text',x.to||''],['cue','Cue / instruction','textarea',x.cue||''],['notes','Notes','textarea',x.notes||''],['review','Needs review','checkbox',!!x.review]],async vals=>{const prop=productionPropById(vals.propId);if(!prop)throw new Error('Choose a prop.');const data={...vals,propName:prop.name,from:vals.from||locationName(vals.fromLocationId,''),to:vals.to||locationName(vals.toLocationId,''),updatedAt:now()};if(x.id)Object.assign(x,data);else showData.movements.push({id:newUUID(),order:99999,...data});await saveShow();renderManage();});}
 
-function renderManageProps(){const rows=(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));manageBody(`<div class="toolbar"><button id="addProp" class="btn primary compact">+ Add prop</button><button id="goInventory" class="btn secondary compact">Shared inventory</button></div><div class="notice oknotice"><strong>Production props have permanent UUIDs.</strong><div class="smalltext">Link a prop to shared inventory only when it is the same physical reusable item.</div></div><section class="manage-section">${rows.map(x=>{const asset=inventoryById(x.assetId),res=reservationForProp(x.id),conf=asset?reservationHasConflict(res):false;return `<div class="listrow"><div><div class="listrow-title">${esc(x.name)}</div><div class="listrow-meta">${x.review?'Needs review · ':''}${asset?`Shared: ${esc(asset.name)}${res?` · ${esc(res.startDate||'no start')} → ${esc(res.endDate||'no end')}`:''}${conf?' · CONFLICT':''}`:'Production-only'}${x.notes?` · ${esc(x.notes)}`:''}</div></div><div class="row-actions"><button class="mini-btn" data-edit-prop="${x.id}">Edit</button><button class="mini-btn" data-del-prop="${x.id}">Delete</button></div></div>`;}).join('')}</section>`);$('#addProp').addEventListener('click',()=>openPropForm());$('#goInventory').addEventListener('click',()=>{manageTab='inventory';renderManage();});$$('[data-edit-prop]').forEach(b=>b.addEventListener('click',()=>openPropForm(showData.props.find(x=>x.id===b.dataset.editProp))));$$('[data-del-prop]').forEach(b=>b.addEventListener('click',async()=>{const id=b.dataset.delProp;if(!confirm('Delete this production prop? Movement records that reference it will remain.'))return;showData.props=showData.props.filter(x=>x.id!==id);workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===id));await saveShow();renderManage();}));}
+function renderManageProps(){
+  const order={"Act I":1,"Act II":2,"Stage Right":1,"Stage Left":2};
+  const rows=(showData.props||[]).slice().sort((a,b)=>(order[a.startAct]||9)-(order[b.startAct]||9)||(order[a.startLocation]||9)-(order[b.startLocation]||9)||a.name.localeCompare(b.name));
+  const groups=groupBy(rows,x=>`${x.startAct||"Other"}||${x.startLocation||"Unassigned"}`);
+  const sections=Object.entries(groups).map(([key,items])=>{const [act,side]=key.split('||');return `<section class="manage-section"><div class="section-title">${esc(act)} · ${esc(side)} <span class="muted">(${items.length})</span></div>${items.map(x=>{const asset=inventoryById(x.assetId),res=reservationForProp(x.id),conf=asset?reservationHasConflict(res):false;return `<div class="listrow"><div><div class="listrow-title">${esc(x.name)}</div><div class="listrow-meta">${x.review?'Needs review · ':''}${asset?`Shared: ${esc(asset.name)}${res?` · ${esc(res.startDate||'no start')} → ${esc(res.endDate||'no end')}`:''}${conf?' · CONFLICT':''}`:'Production-only'}${x.notes?` · ${esc(x.notes)}`:''}</div></div><div class="row-actions"><button class="mini-btn" data-edit-prop="${x.id}">Edit</button><button class="mini-btn" data-del-prop="${x.id}">Delete</button></div></div>`;}).join('')}</section>`;}).join('');
+  manageBody(`<div class="toolbar"><button id="addProp" class="btn primary compact">+ Add prop</button><button id="goInventory" class="btn secondary compact">Shared inventory</button></div><div class="notice oknotice"><strong>Master prop list</strong><div class="smalltext">Backstage Props List is the authority. Items are grouped by their starting act and side; presets handle exact stage placement.</div></div>${sections||'<div class="empty">No props yet.</div>'}`);
+  $('#addProp').addEventListener('click',()=>openPropForm());$('#goInventory').addEventListener('click',()=>{manageTab='inventory';renderManage();});$$('[data-edit-prop]').forEach(b=>b.addEventListener('click',()=>openPropForm(showData.props.find(x=>x.id===b.dataset.editProp))));$$('[data-del-prop]').forEach(b=>b.addEventListener('click',async()=>{const id=b.dataset.delProp;if(!confirm('Delete this production prop? Movement records that reference it will remain.'))return;showData.props=showData.props.filter(x=>x.id!==id);workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===id));await saveShow();renderManage();}));
+}
 
-function openPropForm(x={}){const res=x.id?reservationForProp(x.id):null,assets=(workspaceData.inventory||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),assetOpts=[['','Production-only / not shared'],...assets.map(a=>[a.id,`${a.name}${a.trackingMode==='bulk'?` (qty ${a.quantity})`:''}`])];openForm(x.id?'Edit prop':'Add prop',[['name','Name','text',x.name||''],['notes','Notes','textarea',x.notes||''],['ready','Ready / acquired','checkbox',!!x.ready],['review','Needs review','checkbox',!!x.review],['assetId','Shared inventory asset','select',x.assetId||'',assetOpts],['reserveQty','Quantity reserved','number',String(res?.quantity||1)],['reserveStart','Needed from','date',res?.startDate||showData.production.startDate||''],['reserveEnd','Needed through','date',res?.endDate||showData.production.endDate||'']],async vals=>{if(!vals.name.trim())throw new Error('Prop name is required.');if(vals.reserveStart&&vals.reserveEnd&&vals.reserveEnd<vals.reserveStart)throw new Error('Reservation end date cannot be before start date.');let prop=x;if(x.id){Object.assign(prop,{name:vals.name,notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()});}else{prop={id:newUUID(),sourcePage:'',sourceRow:'',name:vals.name,notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()};showData.props.push(prop);}for(const m of showData.movements)if(m.propId===prop.id)m.propName=prop.name;workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===prop.id));if(prop.assetId){const asset=inventoryById(prop.assetId),qty=asset?.trackingMode==='unique'?1:Math.max(1,Number(vals.reserveQty||1));workspaceData.reservations.push({id:res?.id||newUUID(),assetId:prop.assetId,productionId:showData.production.id,productionPropId:prop.id,quantity:qty,startDate:vals.reserveStart||'',endDate:vals.reserveEnd||'',notes:'',updatedAt:now()});}await saveShow();renderManage();});}
+function openPropForm(x={}){const res=x.id?reservationForProp(x.id):null,assets=(workspaceData.inventory||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),assetOpts=[['','Production-only / not shared'],...assets.map(a=>[a.id,`${a.name}${a.trackingMode==='bulk'?` (qty ${a.quantity})`:''}`])];openForm(x.id?'Edit prop':'Add prop',[['name','Name','text',x.name||''],['startAct','Starting act','select',x.startAct||'', [['','Not set'],['Act I','Act I'],['Act II','Act II']]],['startLocation','Starting side','select',x.startLocation||'', [['','Not set'],['Stage Right','Stage Right'],['Stage Left','Stage Left'],['Onstage','Onstage'],['Backstage','Backstage']]],['notes','Notes','textarea',x.notes||''],['ready','Ready / acquired','checkbox',!!x.ready],['review','Needs review','checkbox',!!x.review],['assetId','Shared inventory asset','select',x.assetId||'',assetOpts],['reserveQty','Quantity reserved','number',String(res?.quantity||1)],['reserveStart','Needed from','date',res?.startDate||showData.production.startDate||''],['reserveEnd','Needed through','date',res?.endDate||showData.production.endDate||'']],async vals=>{if(!vals.name.trim())throw new Error('Prop name is required.');if(vals.reserveStart&&vals.reserveEnd&&vals.reserveEnd<vals.reserveStart)throw new Error('Reservation end date cannot be before start date.');let prop=x;if(x.id){Object.assign(prop,{name:vals.name,startAct:vals.startAct||'',startLocation:vals.startLocation||'',notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()});}else{prop={id:newUUID(),sourcePage:'',sourceRow:'',name:vals.name,startAct:vals.startAct||'',startLocation:vals.startLocation||'',notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()};showData.props.push(prop);}for(const m of showData.movements)if(m.propId===prop.id)m.propName=prop.name;workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===prop.id));if(prop.assetId){const asset=inventoryById(prop.assetId),qty=asset?.trackingMode==='unique'?1:Math.max(1,Number(vals.reserveQty||1));workspaceData.reservations.push({id:res?.id||newUUID(),assetId:prop.assetId,productionId:showData.production.id,productionPropId:prop.id,quantity:qty,startDate:vals.reserveStart||'',endDate:vals.reserveEnd||'',notes:'',updatedAt:now()});}await saveShow();renderManage();});}
 
 function imageScopeList(scope) {
   return allImageMeta().filter(x => x.scope === scope && x.hidden !== true);
