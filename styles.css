@@ -38,3 +38,6 @@ dialog{background:#141b23;color:var(--text);border:1px solid var(--line);border-
 [hidden]{display:none!important}
 h2{margin:.2rem 0 .8rem;font-size:1.3rem}summary{user-select:none}.flow-card:active,.navbtn:active,.chip:active,.btn:active,.mini-btn:active{transform:translateY(1px)}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* v0.4: arbitrary acts and management readability */
+.act-segments{display:flex;overflow-x:auto;grid-template-columns:none;scrollbar-width:thin}.act-segments .segment-btn{flex:0 0 auto;min-width:110px;padding:0 14px}.row-actions{flex-wrap:wrap;justify-content:flex-end}.row-actions .mini-btn:disabled{opacity:.35;cursor:not-allowed}.manage-section .filemeta{line-height:1.5}.summary-grid{grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}@media(max-width:520px){.listrow{align-items:start}.row-actions{max-width:170px}}

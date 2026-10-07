@@ -1,7 +1,7 @@
 {
-  "name": "Starcatcher Stage Manager",
-  "short_name": "Starcatcher SM",
-  "description": "Offline stage manager preset and prop run tracker for Peter and the Starcatcher.",
+  "name": "Stage Manager Quick List",
+  "short_name": "Stage Manager",
+  "description": "Offline-first stage manager tool for check-in, act presets, transitions, prop movements, reference photos, and production setup.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

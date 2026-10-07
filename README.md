@@ -1,30 +1,42 @@
-# Starcatcher Stage Manager PWA
+# Stage Manager Quick List PWA
 
-Version 0.3.0
+Version 0.4.0
 
 ## Purpose
-Offline-first iPad stage-management tool for Peter and the Starcatcher. It combines the written preset/backstage-prop documents, the prop movement spreadsheet, visual preset references, and a nightly company check-in.
+Offline-first iPad stage-management tool. Peter and the Starcatcher remains the bundled starter production, but the app can now be reused for other productions.
 
-## What changed in v0.3
-- Rebuilt mobile/iPad navigation around Tonight, Presets, Run, Check-in, and Manage.
-- Fixed Run Track search so typing filters existing rows without rebuilding the input; the keyboard/focus stays open.
-- Added nightly cast + stage-crew check-in with Waiting, Here, Late, Missing, Excused, and Not called states.
-- Added editable People roster. Cast is seeded from the production cast list; Stage Manager is seeded under crew and additional crew can be added.
-- Added Image Library management. Any preset area can use any Act I/Act II library photo.
-- Bundled photos can be replaced locally without republishing the app; uploaded photos can be added to the library.
-- Added data-only export and a Full Backup export that includes locally uploaded/replaced images.
-- Preset checks are now nightly, so a new calendar date starts with a clean checklist.
+## Core workflow
+- **Tonight**: company check-in plus readiness for every act/section.
+- **Presets**: each act has a target preset. Act 1 is the preshow preset; Act 2 and later are the required setup/changeover state before that act. This replaces the old hard-coded Intermission page.
+- **Run**: searchable prop/scenic movement track.
+- **Check-in**: nightly actor and stage-crew attendance.
+- **Manage**: production, acts, locations, presets, people, movements, props, photos, and backups.
 
-## Source hierarchy
-1. `PETER & THE STARCATCHER PRESETS.docx` — authoritative Act I / Act II preset and intermission setup.
-2. `PETER & THE STARCATCHER PROPS.docx` — authoritative backstage SR/SL prop inventory and quantities.
-3. `STARCATCHER PROPS(2).xlsx` — prop movement / responsibility run track.
-4. Supplied Act I / Act II photos — visual verification that can be reassigned or replaced in the app.
+## New in v0.4
+- Added **Manage > Locations**. Locations can be added, renamed, reordered, and deleted when unused. Renaming cascades to preset records and photo assignments.
+- Preset editing now selects from managed locations rather than requiring free-text location entry.
+- Added **Manage > Production** with editable production details and arbitrary acts/sections.
+- Acts can be added, renamed, reordered, or removed. One-act, two-act, and multi-act shows are supported.
+- Removed the special Intermission model. Every act after the first uses its preset as the changeover/setup checklist from the previous act.
+- Added **Start new production**. A full backup of the current production downloads first, then a clean production workspace is created.
+- Data/full-backup filenames use the current production name.
+- Import supports both v0.4 generic backups and earlier Starcatcher v0.3 backups.
+- App updates no longer merge Starcatcher seed data into a different locally-created production.
+
+## Peter and the Starcatcher source hierarchy
+1. `PETER & THE STARCATCHER PRESETS.docx` — authoritative preset/changeover state.
+2. `PETER & THE STARCATCHER PROPS.docx` — authoritative backstage prop inventory.
+3. `STARCATCHER PROPS(2).xlsx` — movement/responsibility track.
+4. Supplied photos — visual verification and editable reference images.
 
 ## Install on iPad
-Publish this folder to an HTTPS static host such as GitHub Pages. Open it once in Safari, then Share > Add to Home Screen. After the first complete load, the app works offline.
+Publish this folder to an HTTPS static host such as GitHub Pages. Open it once in Safari and choose Share > Add to Home Screen. The service worker caches the application and bundled Starcatcher reference images for offline use.
+
+## Using another production
+Go to **Manage > Production > Start new production**. The current production downloads as a full backup first. Add the show's acts/sections, locations, people, props, presets, run movements, and reference photos.
 
 ## Sharing without a server
-- **Export data**: small JSON file for show-data changes when bundled photos are unchanged.
-- **Export full backup**: includes show data, nightly checks, and any locally uploaded/replaced photos. Use this when another device needs the same custom images.
-- Import using **Merge** for normal collaboration or **Replace** when the incoming file should become the master copy.
+- **Export data**: editable production data only.
+- **Export full backup**: production data, nightly checks, and locally uploaded/replaced photos.
+- **Import + merge**: for updates to the same production.
+- **Import + replace**: to restore/switch to another production.

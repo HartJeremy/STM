@@ -1,4 +1,4 @@
-const APP_VERSION = '0.3.0';
+const APP_VERSION = '0.4.0';
 const DB_NAME = 'starcatcher-sm';
 const DB_VERSION = 2;
 const SHOW_KEY = 'show';
@@ -8,8 +8,8 @@ let db;
 let showData;
 let checks = {};
 let currentView = 'tonight';
-let presetMode = 'I';
-let manageTab = 'people';
+let presetMode = '';
+let manageTab = 'production';
 let attendanceDate = localDateKey();
 let runActFilter = 'ALL';
 let runPersonFilter = 'ALL';
@@ -42,6 +42,41 @@ function groupBy(rows, keyFn) {
     (out[k] ||= []).push(row);
     return out;
   }, {});
+}
+
+
+function slugify(s) {
+  return String(s || 'production').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'production';
+}
+function sortedActs() { return (showData?.acts || []).slice().sort((a,b)=>Number(a.order||0)-Number(b.order||0)); }
+function actName(id) { return sortedActs().find(a=>a.id===id)?.name || id || 'Unspecified'; }
+function actOrder(id) { const i=sortedActs().findIndex(a=>a.id===id); return i<0?999:i; }
+function actOptions(includeBlank=false) { const out=sortedActs().map(a=>[a.id,a.name]); if(includeBlank) out.push(['','Unspecified']); return out; }
+function sortedLocations() { return (showData?.locations || []).filter(x=>x.active!==false).slice().sort((a,b)=>Number(a.order||0)-Number(b.order||0)||String(a.name).localeCompare(String(b.name))); }
+function locationOptions() { return sortedLocations().map(x=>[x.name,x.name]); }
+
+function ensureShowStructure(data) {
+  data ||= {}; data.production ||= {};
+  data.production.id ||= `production-${Date.now()}`;
+  data.production.title ||= 'Untitled Production'; data.production.company ||= '';
+  for(const k of ['people','props','movements','presets']) if(!Array.isArray(data[k])) data[k]=[];
+  if(!data.images || typeof data.images!=='object') data.images={act1:[],act2:[],custom:[]};
+  data.images.act1 ||= []; data.images.act2 ||= []; data.images.custom ||= [];
+  if(!data.areaPhotos || typeof data.areaPhotos!=='object' || Array.isArray(data.areaPhotos)) data.areaPhotos={};
+  if(!data.attendance || typeof data.attendance!=='object' || Array.isArray(data.attendance)) data.attendance={};
+  data.settings ||= {}; data.settings.attendanceStatuses=['waiting','here','late','missing','excused','notcalled'];
+  if(!Array.isArray(data.acts) || !data.acts.length) {
+    const seen=[]; for(const row of [...data.presets,...data.movements]){const a=String(row.act||'').trim();if(a&&!seen.includes(a))seen.push(a);} if(!seen.length)seen.push('I');
+    data.acts=seen.map((id,i)=>({id,name:id.startsWith('Act ')?id:`Act ${id}`,order:i+1,notes:'',updatedAt:now()}));
+  }
+  if(!Array.isArray(data.locations) || !data.locations.length) {
+    const seen=[]; for(const row of data.presets){const a=String(row.area||'').trim();if(a&&!seen.includes(a))seen.push(a);} if(!seen.length)seen.push('Stage Left','Stage Right','Center Stage','Onstage','Backstage');
+    data.locations=seen.map((name,i)=>({id:`loc-${Date.now()}-${i}`,name,order:i+1,active:true,updatedAt:now()}));
+  }
+  data.changeover=[]; data.schemaVersion=Math.max(Number(data.schemaVersion||0),4); data.appVersion=APP_VERSION; return data;
+}
+function blankProduction(title,company,firstActName='Act I') {
+  const ts=Date.now(); return ensureShowStructure({schemaVersion:4,appVersion:APP_VERSION,imageBundleVersion:'custom',production:{id:`production-${ts}`,title:title||'Untitled Production',company:company||'',updatedAt:now(),dataAuthority:'Locally created production'},acts:[{id:`act-${ts}-1`,name:firstActName||'Act I',order:1,notes:'Preshow preset',updatedAt:now()}],locations:['Stage Left','Stage Right','Center Stage','Onstage','Backstage'].map((name,i)=>({id:`loc-${ts}-${i+1}`,name,order:i+1,active:true,updatedAt:now()})),people:[],props:[],movements:[],presets:[],changeover:[],images:{act1:[],act2:[],custom:[]},areaPhotos:{},attendance:{},settings:{attendanceStatuses:['waiting','here','late','missing','excused','notcalled']}});
 }
 
 function openDB() {
@@ -131,20 +166,9 @@ function mergeAreaPhotos(seed = {}, local = {}) {
 }
 
 function migrateToStarter(local, starter) {
-  return {
-    ...starter,
-    production: {...starter.production, ...(local.production || {})},
-    people: overlayById(starter.people || [], local.people || []),
-    props: overlayById(starter.props || [], local.props || []),
-    movements: overlayById(starter.movements || [], local.movements || []),
-    presets: overlayById(starter.presets || [], local.presets || []),
-    changeover: overlayById(starter.changeover || [], local.changeover || []),
-    images: mergeImageMeta(starter.images || {}, local.images || {}),
-    areaPhotos: mergeAreaPhotos(starter.areaPhotos || {}, local.areaPhotos || {}),
-    attendance: {...(starter.attendance || {}), ...(local.attendance || {})},
-    settings: {...(starter.settings || {}), ...(local.settings || {})},
-    appVersion: APP_VERSION
-  };
+  local=ensureShowStructure(local); starter=ensureShowStructure(starter);
+  if(local.production?.id!==starter.production?.id) return local;
+  return ensureShowStructure({...starter,production:{...starter.production,...(local.production||{})},acts:overlayById(starter.acts||[],local.acts||[]),locations:overlayById(starter.locations||[],local.locations||[]),people:overlayById(starter.people||[],local.people||[]),props:overlayById(starter.props||[],local.props||[]),movements:overlayById(starter.movements||[],local.movements||[]),presets:overlayById(starter.presets||[],local.presets||[]),images:mergeImageMeta(starter.images||{},local.images||{}),areaPhotos:mergeAreaPhotos(starter.areaPhotos||{},local.areaPhotos||{}),attendance:{...(starter.attendance||{}),...(local.attendance||{})},settings:{...(starter.settings||{}),...(local.settings||{})},appVersion:APP_VERSION});
 }
 
 function mergeImageMeta(a = {}, b = {}) {
@@ -156,37 +180,12 @@ function mergeImageMeta(a = {}, b = {}) {
 }
 
 async function init() {
-  db = await openDB();
-  const starter = await (await fetch('data/seed-show.json', {cache:'no-store'})).json();
-  showData = await getKV(SHOW_KEY);
-  checks = await getKV(CHECK_KEY) || {};
-
-  if (!showData) {
-    showData = starter;
-    await setKV(SHOW_KEY, showData);
-  } else if (showData.appVersion !== APP_VERSION || Number(showData.schemaVersion || 0) < Number(starter.schemaVersion || 0)) {
-    showData = migrateToStarter(showData, starter);
-    await setKV(SHOW_KEY, showData);
-  }
-
-  // v0.2 used a flat check object. Move any existing checks into today's bucket.
-  if (checks && Object.values(checks).some(v => typeof v === 'boolean')) {
-    checks = {[localDateKey()]: {...checks}};
-    await setKV(CHECK_KEY, checks);
-  }
-
-  showData.attendance ||= {};
-  showData.areaPhotos ||= {};
-  showData.images ||= {act1:[],act2:[],custom:[]};
-  showData.settings ||= {};
-  if (!Array.isArray(showData.settings.attendanceStatuses) || !showData.settings.attendanceStatuses.includes('missing')) {
-    showData.settings.attendanceStatuses = ['waiting','here','late','missing','excused','notcalled'];
-  }
-
-  $('#productionTitle').textContent = showData.production?.title || 'Stage Manager';
-  bindShell();
-  route('tonight');
-  registerSW();
+  db=await openDB(); const starter=ensureShowStructure(await (await fetch('data/seed-show.json',{cache:'no-store'})).json());
+  showData=await getKV(SHOW_KEY); checks=await getKV(CHECK_KEY)||{};
+  if(showData && !showData.production?.id && showData.production?.title===starter.production?.title){showData.production.id=starter.production.id;}
+  if(!showData){showData=starter;await setKV(SHOW_KEY,showData);} else {showData=ensureShowStructure(showData);if(showData.production?.id===starter.production?.id&&(showData.appVersion!==APP_VERSION||Number(showData.schemaVersion||0)<Number(starter.schemaVersion||0)))showData=migrateToStarter(showData,starter);await setKV(SHOW_KEY,showData);}
+  if(checks&&Object.values(checks).some(v=>typeof v==='boolean')){checks={[localDateKey()]:{...checks}};await setKV(CHECK_KEY,checks);}
+  presetMode=sortedActs()[0]?.id||''; $('#productionTitle').textContent=showData.production?.title||'Stage Manager'; bindShell(); route('tonight'); registerSW();
 }
 
 function bindShell() {
@@ -279,39 +278,11 @@ function attendanceSummary(date = attendanceDate) {
 }
 
 function renderTonight() {
-  setPageTitle('Tonight');
-  const date = localDateKey();
-  const a = attendanceSummary(date);
-  const p1 = checklistStats(showData.presets.filter(x => x.act === 'I'), date);
-  const ch = checklistStats(showData.changeover || [], date);
-  const p2 = checklistStats(showData.presets.filter(x => x.act === 'II'), date);
-  const neededText = a.stillNeed.length ? a.stillNeed.slice(0,4).map(p => p.name.split(' ')[0]).join(', ') + (a.stillNeed.length > 4 ? ` +${a.stillNeed.length-4}` : '') : 'Everyone accounted for';
-
-  $('#view').innerHTML = `
-    <div class="eyebrow">${esc(prettyDate(date))}</div>
-    <div class="summary-grid">
-      <div class="summary-tile"><strong>${a.accounted}/${a.total}</strong><span>People accounted for</span></div>
-      <div class="summary-tile"><strong>${p1.done}/${p1.total}</strong><span>Act I preset</span></div>
-      <div class="summary-tile"><strong>${ch.done}/${ch.total}</strong><span>Intermission</span></div>
-      <div class="summary-tile"><strong>${p2.done}/${p2.total}</strong><span>Act II preset</span></div>
-    </div>
-    <div class="${a.stillNeed.length || a.missing.length ? 'needed' : 'needed good'}">
-      <strong>${a.stillNeed.length ? `${a.stillNeed.length} still need check-in` : 'Cast & crew accounted for'}</strong>
-      <div class="smalltext">${esc(neededText)}${a.missing.length ? ` · Missing: ${a.missing.map(p=>p.name.split(' ')[0]).join(', ')}` : ''}</div>
-    </div>
-    <div class="flow">
-      ${flowCard('checkin','Check-in','Cast and stage crew',a.stillNeed.length ? `${a.stillNeed.length} waiting` : 'Complete',!a.stillNeed.length)}
-      ${flowCard('presets','Act I preset','Written preset + backstage props',`${p1.done}/${p1.total}`,p1.done===p1.total,'I')}
-      ${flowCard('presets','Intermission','Act I → Act II changeover',`${ch.done}/${ch.total}`,ch.done===ch.total,'change')}
-      ${flowCard('presets','Act II preset','Act II setup + backstage additions',`${p2.done}/${p2.total}`,p2.done===p2.total,'II')}
-      ${flowCard('run','Run track','Search by prop, person, page or cue',`${showData.movements.length} entries`,true)}
-      ${flowCard('manage','Manage show','Edit data, images and backups','Edit',true)}
-    </div>`;
-
-  $$('[data-flow]').forEach(b => b.addEventListener('click', () => {
-    if (b.dataset.presetMode) presetMode = b.dataset.presetMode;
-    route(b.dataset.flow);
-  }));
+  setPageTitle('Tonight'); const date=localDateKey(), attendance=attendanceSummary(date), acts=sortedActs();
+  const stats=acts.map(a=>({act:a,stats:checklistStats(showData.presets.filter(x=>x.act===a.id),date)}));
+  const needed=attendance.stillNeed.length?attendance.stillNeed.slice(0,4).map(p=>p.name.split(' ')[0]).join(', ')+(attendance.stillNeed.length>4?` +${attendance.stillNeed.length-4}`:''):'Everyone accounted for';
+  $('#view').innerHTML=`<div class="eyebrow">${esc(prettyDate(date))}</div><div class="summary-grid"><div class="summary-tile"><strong>${attendance.accounted}/${attendance.total}</strong><span>People accounted for</span></div>${stats.map(({act,stats},i)=>`<div class="summary-tile"><strong>${stats.done}/${stats.total}</strong><span>${esc(act.name)} ${i===0?'preshow':'setup'}</span></div>`).join('')}</div><div class="${attendance.stillNeed.length||attendance.missing.length?'needed':'needed good'}"><strong>${attendance.stillNeed.length?`${attendance.stillNeed.length} still need check-in`:'Cast & crew accounted for'}</strong><div class="smalltext">${esc(needed)}${attendance.missing.length?` · Missing: ${esc(attendance.missing.map(p=>p.name.split(' ')[0]).join(', '))}`:''}</div></div><div class="flow">${flowCard('checkin','Check-in','Cast and stage crew',attendance.stillNeed.length?`${attendance.stillNeed.length} waiting`:'Complete',!attendance.stillNeed.length)}${stats.map(({act,stats},i)=>flowCard('presets',act.name,i===0?'Preshow preset':`Setup before ${act.name}`,stats.total?`${stats.done}/${stats.total}`:'No items',stats.total>0&&stats.done===stats.total,act.id)).join('')}${flowCard('run','Run track','Search prop, person, page, cue or location',`${showData.movements.length} entries`,true)}${flowCard('manage','Manage production','Production, acts, locations, data and photos','Edit',true)}</div>`;
+  $$('[data-flow]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.presetMode)presetMode=b.dataset.presetMode;route(b.dataset.flow);}));
 }
 
 function flowCard(view,title,sub,badge,good,preset='') {
@@ -319,33 +290,15 @@ function flowCard(view,title,sub,badge,good,preset='') {
 }
 
 function renderPresets() {
-  setPageTitle('Presets');
-  $('#view').innerHTML = `
-    <div class="segmented">
-      <button class="segment-btn ${presetMode==='I'?'active':''}" data-preset-tab="I">Act I</button>
-      <button class="segment-btn ${presetMode==='change'?'active':''}" data-preset-tab="change">Intermission</button>
-      <button class="segment-btn ${presetMode==='II'?'active':''}" data-preset-tab="II">Act II</button>
-    </div>
-    <div id="presetBody"></div>`;
-  $$('[data-preset-tab]').forEach(b => b.addEventListener('click', () => { presetMode = b.dataset.presetTab; renderPresets(); }));
-  if (presetMode === 'change') renderChangeoverBody();
-  else renderPresetBody(presetMode);
+  setPageTitle('Presets'); const acts=sortedActs(); if(!acts.some(a=>a.id===presetMode))presetMode=acts[0]?.id||'';
+  $('#view').innerHTML=`<div class="segmented act-segments">${acts.map(a=>`<button class="segment-btn ${presetMode===a.id?'active':''}" data-preset-tab="${esc(a.id)}">${esc(a.name)}</button>`).join('')}</div><div id="presetBody"></div>`;
+  $$('[data-preset-tab]').forEach(b=>b.addEventListener('click',()=>{presetMode=b.dataset.presetTab;renderPresets();})); if(presetMode)renderPresetBody(presetMode);else $('#presetBody').innerHTML='<div class="empty">Add an act under Manage → Production.</div>';
 }
 
-function renderPresetBody(act) {
-  const rows = showData.presets.filter(x => x.act === act);
-  const stats = checklistStats(rows);
-  const groups = groupBy(rows, x => x.area);
-  const body = $('#presetBody');
-  body.innerHTML = `
-    <div class="toolbar">
-      <div><div class="eyebrow">Act ${act}</div>${progressHTML(stats.done,stats.total)}</div>
-      <span class="spacer"></span>
-      <button class="btn secondary compact" id="resetPreset">Reset tonight</button>
-    </div>
-    ${Object.entries(groups).map(([area,items],idx) => renderLocationCard(act,area,items,idx===0)).join('')}`;
-  bindPresetBodyEvents(act, rows);
-  hydrateImages(body);
+function renderPresetBody(actId) {
+  const acts=sortedActs(),idx=acts.findIndex(a=>a.id===actId),act=acts[idx]||{name:actId},rows=showData.presets.filter(x=>x.act===actId),stats=checklistStats(rows),groups=groupBy(rows,x=>x.area);
+  const intro=idx<=0?'Target state before the show starts.':`Target state before ${act.name}. Complete this during the break/changeover from ${acts[idx-1]?.name||'the previous act'}.`;
+  const body=$('#presetBody'); body.innerHTML=`<div class="notice oknotice"><strong>${esc(act.name)} setup</strong><div class="smalltext">${esc(intro)}</div></div><div class="toolbar"><div><div class="eyebrow">${esc(act.name)}</div>${progressHTML(stats.done,stats.total)}</div><span class="spacer"></span><button class="btn secondary compact" id="resetPreset">Reset tonight</button></div>${Object.keys(groups).length?Object.entries(groups).map(([area,items],i)=>renderLocationCard(actId,area,items,i===0)).join(''):'<div class="empty">No preset items yet. Add them under Manage → Presets.</div>'}`; bindPresetBodyEvents(actId,rows); hydrateImages(body);
 }
 
 function renderLocationCard(act, area, items, open=false) {
@@ -388,26 +341,7 @@ function bindPresetBodyEvents(act, rows) {
   });
 }
 
-function renderChangeoverBody() {
-  const rows = showData.changeover || [];
-  const stats = checklistStats(rows);
-  const groups = groupBy(rows, x => x.area);
-  $('#presetBody').innerHTML = `
-    <div class="notice">Use this during intermission, then verify the Act II preset before places.</div>
-    <div class="toolbar"><div>${progressHTML(stats.done,stats.total)}</div><span class="spacer"></span><button class="btn secondary compact" id="resetChange">Reset tonight</button></div>
-    ${Object.entries(groups).map(([area,items],idx) => `<details class="location-card" ${idx===0?'open':''}><summary><span><strong>${esc(area)}</strong><small>${items.filter(i=>isChecked(i.id)).length}/${items.length} checked</small></span><span>›</span></summary><div class="location-body">${items.map(item=>`<label class="checkrow ${isChecked(item.id)?'done':''}"><input type="checkbox" data-change-check="${esc(item.id)}" ${isChecked(item.id)?'checked':''}><span class="check-main"><strong>${esc(item.item)}</strong>${item.notes?`<div class="check-note">${esc(item.notes)}</div>`:''}</span></label>`).join('')}</div></details>`).join('')}`;
-  $$('[data-change-check]').forEach(box => box.addEventListener('change', async () => {
-    await setChecked(box.dataset.changeCheck, box.checked);
-    box.closest('.checkrow')?.classList.toggle('done',box.checked);
-  }));
-  $('#resetChange').addEventListener('click', async () => {
-    if (!confirm('Reset the intermission checklist for tonight?')) return;
-    const bucket = nightChecks();
-    rows.forEach(x => delete bucket[x.id]);
-    await setKV(CHECK_KEY, checks);
-    renderPresets();
-  });
-}
+
 
 function allImageMeta() {
   return [...(showData.images.act1||[]), ...(showData.images.act2||[]), ...(showData.images.custom||[])];
@@ -459,63 +393,15 @@ function bindPhotoButtons(root = document) {
   }));
 }
 
-function movementSort(a,b) {
-  const act = {'I':1,'II':2,'':9};
-  const aa = act[a.act] || 9, bb = act[b.act] || 9;
-  if (aa !== bb) return aa - bb;
-  const pa = Number(String(a.page||'').match(/\d+/)?.[0] || 9999);
-  const pb = Number(String(b.page||'').match(/\d+/)?.[0] || 9999);
-  if (pa !== pb) return pa - pb;
-  return Number(a.order||0)-Number(b.order||0);
-}
+function movementSort(a,b) { const aa=actOrder(a.act),bb=actOrder(b.act);if(aa!==bb)return aa-bb;const pa=Number(String(a.page||'').match(/\d+/)?.[0]||9999),pb=Number(String(b.page||'').match(/\d+/)?.[0]||9999);if(pa!==pb)return pa-pb;return Number(a.order||0)-Number(b.order||0); }
 
 function renderRun() {
-  setPageTitle('Run Track');
-  const people = [...new Set((showData.movements||[]).flatMap(x => (x.person||'').split(/,|\//).map(s=>s.trim()).filter(Boolean)))].sort();
-  const rows = (showData.movements || []).slice().sort(movementSort);
-  $('#view').innerHTML = `
-    <div class="run-controls">
-      <div class="search-wrap"><input id="runSearch" class="searchbar" autocomplete="off" inputmode="search" placeholder="Search prop, person, page, cue…" value="${esc(runSearch)}"><button id="clearSearch" class="btn secondary compact" ${runSearch?'':'hidden'}>Clear</button></div>
-      <div class="filterrow">
-        <button class="chip ${runActFilter==='ALL'?'active':''}" data-run-act="ALL">All</button>
-        <button class="chip ${runActFilter==='I'?'active':''}" data-run-act="I">Act I</button>
-        <button class="chip ${runActFilter==='II'?'active':''}" data-run-act="II">Act II</button>
-        <select id="runPerson" class="select-compact"><option value="ALL">All people</option>${people.map(p=>`<option value="${esc(p)}" ${runPersonFilter===p?'selected':''}>${esc(p)}</option>`).join('')}</select>
-      </div>
-      <div id="resultsCount" class="results-count"></div>
-    </div>
-    <div id="runResults">${rows.map(renderMoveCard).join('')}</div>`;
-
-  const input = $('#runSearch');
-  input.addEventListener('input', () => {
-    runSearch = input.value;
-    $('#clearSearch').hidden = !runSearch;
-    applyRunFilter(); // DOM filtering only: keyboard/focus stays open on iPad/Chrome
-  });
-  $('#clearSearch').addEventListener('click', () => {
-    runSearch = '';
-    input.value = '';
-    $('#clearSearch').hidden = true;
-    input.focus();
-    applyRunFilter();
-  });
-  $$('[data-run-act]').forEach(btn => btn.addEventListener('click', () => {
-    runActFilter = btn.dataset.runAct;
-    $$('[data-run-act]').forEach(x=>x.classList.toggle('active',x===btn));
-    applyRunFilter();
-  }));
-  $('#runPerson').addEventListener('change', e => {runPersonFilter=e.target.value;applyRunFilter();});
-  applyRunFilter();
+  setPageTitle('Run Track'); const people=[...new Set((showData.movements||[]).flatMap(x=>(x.person||'').split(/,|\//).map(s=>s.trim()).filter(Boolean)))].sort(),rows=(showData.movements||[]).slice().sort(movementSort),acts=sortedActs();if(runActFilter!=='ALL'&&!acts.some(a=>a.id===runActFilter))runActFilter='ALL';
+  $('#view').innerHTML=`<div class="run-controls"><div class="search-wrap"><input id="runSearch" class="searchbar" autocomplete="off" inputmode="search" placeholder="Search prop, person, page, cue, location…" value="${esc(runSearch)}"><button id="clearSearch" class="btn secondary compact" ${runSearch?'':'hidden'}>Clear</button></div><div class="filterrow"><button class="chip ${runActFilter==='ALL'?'active':''}" data-run-act="ALL">All</button>${acts.map(a=>`<button class="chip ${runActFilter===a.id?'active':''}" data-run-act="${esc(a.id)}">${esc(a.name)}</button>`).join('')}<select id="runPerson" class="select-compact"><option value="ALL">All people</option>${people.map(p=>`<option value="${esc(p)}" ${runPersonFilter===p?'selected':''}>${esc(p)}</option>`).join('')}</select></div><div id="resultsCount" class="results-count"></div></div><div id="runResults">${rows.map(renderMoveCard).join('')}</div>`;
+  const input=$('#runSearch');input.addEventListener('input',()=>{runSearch=input.value;$('#clearSearch').hidden=!runSearch;applyRunFilter();});$('#clearSearch').addEventListener('click',()=>{runSearch='';input.value='';$('#clearSearch').hidden=true;input.focus();applyRunFilter();});$$('[data-run-act]').forEach(btn=>btn.addEventListener('click',()=>{runActFilter=btn.dataset.runAct;$$('[data-run-act]').forEach(x=>x.classList.toggle('active',x===btn));applyRunFilter();}));$('#runPerson').addEventListener('change',e=>{runPersonFilter=e.target.value;applyRunFilter();});applyRunFilter();
 }
 
-function renderMoveCard(m) {
-  const search = [m.propName,m.act,m.scene,m.page,m.person,m.from,m.to,m.cue,m.notes].join(' ').toLowerCase();
-  return `<article class="move-card ${m.review?'review':''}" data-run-row data-act="${esc(m.act||'')}" data-person="${esc((m.person||'').toLowerCase())}" data-search="${esc(search)}">
-    <div class="move-head"><strong>${esc(m.propName||'Unnamed prop')}</strong><span class="move-loc">${m.act?`Act ${esc(m.act)}`:''}${m.page?` · p${esc(m.page)}`:''}</span></div>
-    ${m.cue?`<div class="move-cue">${esc(m.cue)}</div>`:''}
-    <div class="move-meta">${m.scene?`<span>Scene ${esc(m.scene)}</span>`:''}${m.person?`<span><b>${esc(m.person)}</b></span>`:''}${m.from||m.to?`<span class="move-route">${esc(m.from||'—')} → ${esc(m.to||'—')}</span>`:''}${m.review?'<span class="tag review">review</span>':''}</div>
-  </article>`;
-}
+function renderMoveCard(m) { const search=[m.propName,actName(m.act),m.scene,m.page,m.person,m.from,m.to,m.cue,m.notes].join(' ').toLowerCase();return `<article class="move-card ${m.review?'review':''}" data-run-row data-act="${esc(m.act||'')}" data-person="${esc((m.person||'').toLowerCase())}" data-search="${esc(search)}"><div class="move-head"><strong>${esc(m.propName||'Unnamed prop')}</strong><span class="move-loc">${m.act?esc(actName(m.act)):''}${m.page?` · p${esc(m.page)}`:''}</span></div>${m.cue?`<div class="move-cue">${esc(m.cue)}</div>`:''}<div class="move-meta">${m.scene?`<span>Scene ${esc(m.scene)}</span>`:''}${m.person?`<span><b>${esc(m.person)}</b></span>`:''}${m.from||m.to?`<span class="move-route">${esc(m.from||'—')} → ${esc(m.to||'—')}</span>`:''}${m.review?'<span class="tag review">review</span>':''}</div></article>`; }
 
 function applyRunFilter() {
   const q = runSearch.trim().toLowerCase();
@@ -597,19 +483,27 @@ function bindAttendanceRows() {
 }
 
 function renderManage() {
-  setPageTitle('Manage');
-  const tabs = [['people','People'],['presets','Presets'],['run','Run'],['props','Props'],['images','Images'],['backup','Backup']];
-  $('#view').innerHTML = `<div class="manage-tabs">${tabs.map(([k,l])=>`<button class="manage-tab ${manageTab===k?'active':''}" data-manage-tab="${k}">${l}</button>`).join('')}</div><div id="manageBody"></div>`;
-  $$('[data-manage-tab]').forEach(b=>b.addEventListener('click',()=>{manageTab=b.dataset.manageTab;renderManage();}));
-  if (manageTab==='people') renderManagePeople();
-  else if (manageTab==='presets') renderManagePresets();
-  else if (manageTab==='run') renderManageRun();
-  else if (manageTab==='props') renderManageProps();
-  else if (manageTab==='images') renderManageImages();
-  else renderBackup();
+  setPageTitle('Manage'); const tabs=[['production','Production'],['people','People'],['locations','Locations'],['presets','Presets'],['run','Run'],['props','Props'],['images','Images'],['backup','Backup']];$('#view').innerHTML=`<div class="manage-tabs">${tabs.map(([k,l])=>`<button class="manage-tab ${manageTab===k?'active':''}" data-manage-tab="${k}">${l}</button>`).join('')}</div><div id="manageBody"></div>`;$$('[data-manage-tab]').forEach(b=>b.addEventListener('click',()=>{manageTab=b.dataset.manageTab;renderManage();}));if(manageTab==='production')renderManageProduction();else if(manageTab==='people')renderManagePeople();else if(manageTab==='locations')renderManageLocations();else if(manageTab==='presets')renderManagePresets();else if(manageTab==='run')renderManageRun();else if(manageTab==='props')renderManageProps();else if(manageTab==='images')renderManageImages();else renderBackup();
 }
 
 function manageBody(html) { $('#manageBody').innerHTML = html; }
+
+
+function renderManageProduction() {
+  const acts=sortedActs();manageBody(`<section class="manage-section"><div class="manage-section-head"><div><strong>${esc(showData.production.title||'Untitled Production')}</strong><div class="smalltext muted">${esc(showData.production.company||'No company set')}</div></div><button id="editProduction" class="mini-btn">Edit</button></div><div style="padding:14px"><div class="filemeta">One active production is stored locally. Export a backup before starting another show; import it later to restore.</div></div></section><div class="toolbar"><button id="addAct" class="btn primary compact">+ Add act</button></div><section class="manage-section"><div class="manage-section-head"><strong>Acts / sections</strong><span class="muted smalltext">${acts.length}</span></div>${acts.map((a,i)=>`<div class="listrow"><div><div class="listrow-title">${esc(a.name)}</div><div class="listrow-meta">${i===0?'Preshow preset':`Setup/changeover after ${esc(acts[i-1]?.name||'previous act')}`}${a.notes?` · ${esc(a.notes)}`:''}</div></div><div class="row-actions"><button class="mini-btn" data-act-up="${esc(a.id)}" ${i===0?'disabled':''}>↑</button><button class="mini-btn" data-act-down="${esc(a.id)}" ${i===acts.length-1?'disabled':''}>↓</button><button class="mini-btn" data-edit-act="${esc(a.id)}">Edit</button><button class="mini-btn" data-del-act="${esc(a.id)}" ${acts.length===1?'disabled':''}>Delete</button></div></div>`).join('')}</section><section class="manage-section"><div class="manage-section-head"><strong>Another show</strong></div><div style="padding:14px"><p class="filemeta">Create a clean production with its own acts, locations, roster, props, presets and photos. A full backup of this production downloads first.</p><button id="newProduction" class="btn secondary">Start new production</button></div></section>`);
+  $('#editProduction').addEventListener('click',openProductionForm);$('#addAct').addEventListener('click',()=>openActForm());$$('[data-edit-act]').forEach(b=>b.addEventListener('click',()=>openActForm(showData.acts.find(x=>x.id===b.dataset.editAct))));$$('[data-act-up]').forEach(b=>b.addEventListener('click',()=>moveAct(b.dataset.actUp,-1)));$$('[data-act-down]').forEach(b=>b.addEventListener('click',()=>moveAct(b.dataset.actDown,1)));$$('[data-del-act]').forEach(b=>b.addEventListener('click',()=>deleteAct(b.dataset.delAct)));$('#newProduction').addEventListener('click',startNewProduction);
+}
+function openProductionForm(){openForm('Production details',[['title','Production title','text',showData.production.title||''],['company','Company / venue','text',showData.production.company||'']],async vals=>{if(!vals.title.trim())throw new Error('Production title is required.');Object.assign(showData.production,vals,{updatedAt:now()});await saveShow();$('#productionTitle').textContent=showData.production.title;renderManage();});}
+function openActForm(act={}){openForm(act.id?'Edit act':'Add act',[['name','Act / section name','text',act.name||`Act ${sortedActs().length+1}`],['notes','Notes','textarea',act.notes||'']],async vals=>{if(!vals.name.trim())throw new Error('Act name is required.');if(act.id)Object.assign(act,vals,{updatedAt:now()});else showData.acts.push({id:`act-${Date.now()}`,name:vals.name,notes:vals.notes,order:sortedActs().length+1,updatedAt:now()});normalizeActOrders();await saveShow();renderManage();});}
+function normalizeActOrders(){sortedActs().forEach((a,i)=>a.order=i+1);}
+async function moveAct(id,delta){const acts=sortedActs(),i=acts.findIndex(a=>a.id===id),j=i+delta;if(i<0||j<0||j>=acts.length)return;[acts[i].order,acts[j].order]=[acts[j].order,acts[i].order];await saveShow();renderManage();}
+async function deleteAct(id){const act=showData.acts.find(x=>x.id===id);if(!act||showData.acts.length<=1)return;const pc=showData.presets.filter(x=>x.act===id).length,mc=showData.movements.filter(x=>x.act===id).length;if(!confirm(`Delete ${act.name}? This also removes ${pc} preset item(s), ${mc} movement(s), and its photo assignments.`))return;showData.acts=showData.acts.filter(x=>x.id!==id);showData.presets=showData.presets.filter(x=>x.act!==id);showData.movements=showData.movements.filter(x=>x.act!==id);for(const k of Object.keys(showData.areaPhotos||{}))if(k.startsWith(`${id}::`))delete showData.areaPhotos[k];showData.images.custom=(showData.images.custom||[]).filter(x=>x.scope!==id);normalizeActOrders();presetMode=sortedActs()[0]?.id||'';await saveShow();renderManage();}
+async function startNewProduction(){if(!confirm('Start a new production? A full backup of the current production will download first, then this local workspace will be cleared.'))return;await exportFullBackup(false);openForm('New production',[['title','Production title','text',''],['company','Company / venue','text',showData.production.company||''],['firstAct','First act / section','text','Act I']],async vals=>{if(!vals.title.trim())throw new Error('Production title is required.');showData=blankProduction(vals.title,vals.company,vals.firstAct);checks={};presetMode=sortedActs()[0]?.id||'';runActFilter='ALL';runPersonFilter='ALL';runSearch='';await saveShow();await setKV(CHECK_KEY,checks);$('#productionTitle').textContent=showData.production.title;manageTab='production';renderManage();});}
+function renderManageLocations(){const rows=sortedLocations();manageBody(`<div class="toolbar"><button id="addLocation" class="btn primary compact">+ Add location</button></div><div class="notice oknotice"><strong>Locations organize presets and photos.</strong><div class="smalltext">Rename a location here and its preset/photo assignments update automatically.</div></div><section class="manage-section">${rows.map((x,i)=>`<div class="listrow"><div><div class="listrow-title">${esc(x.name)}</div><div class="listrow-meta">${showData.presets.filter(p=>p.area===x.name).length} preset item(s)</div></div><div class="row-actions"><button class="mini-btn" data-loc-up="${x.id}" ${i===0?'disabled':''}>↑</button><button class="mini-btn" data-loc-down="${x.id}" ${i===rows.length-1?'disabled':''}>↓</button><button class="mini-btn" data-edit-location="${x.id}">Edit</button><button class="mini-btn" data-del-location="${x.id}">Delete</button></div></div>`).join('')}</section>`);$('#addLocation').addEventListener('click',()=>openLocationForm());$$('[data-edit-location]').forEach(b=>b.addEventListener('click',()=>openLocationForm(showData.locations.find(x=>x.id===b.dataset.editLocation))));$$('[data-loc-up]').forEach(b=>b.addEventListener('click',()=>moveLocation(b.dataset.locUp,-1)));$$('[data-loc-down]').forEach(b=>b.addEventListener('click',()=>moveLocation(b.dataset.locDown,1)));$$('[data-del-location]').forEach(b=>b.addEventListener('click',()=>deleteLocation(b.dataset.delLocation)));}
+function openLocationForm(loc={}){openForm(loc.id?'Edit location':'Add location',[['name','Location / area name','text',loc.name||'']],async vals=>{const name=vals.name.trim();if(!name)throw new Error('Location name is required.');if(showData.locations.some(x=>x.id!==loc.id&&x.name.toLowerCase()===name.toLowerCase()))throw new Error('That location already exists.');if(loc.id){const old=loc.name;loc.name=name;loc.updatedAt=now();showData.presets.filter(x=>x.area===old).forEach(x=>x.area=name);for(const [k,v] of Object.entries({...showData.areaPhotos})){if(v.act&&v.area===old){delete showData.areaPhotos[k];v.area=name;showData.areaPhotos[`${v.act}::${name}`]=v;}}showData.movements.forEach(m=>{if(m.from===old)m.from=name;if(m.to===old)m.to=name;});}else showData.locations.push({id:`loc-${Date.now()}`,name,order:sortedLocations().length+1,active:true,updatedAt:now()});normalizeLocationOrders();await saveShow();renderManage();});}
+function normalizeLocationOrders(){sortedLocations().forEach((x,i)=>x.order=i+1);}
+async function moveLocation(id,delta){const rows=sortedLocations(),i=rows.findIndex(x=>x.id===id),j=i+delta;if(i<0||j<0||j>=rows.length)return;[rows[i].order,rows[j].order]=[rows[j].order,rows[i].order];await saveShow();renderManage();}
+async function deleteLocation(id){const loc=showData.locations.find(x=>x.id===id);if(!loc)return;const used=showData.presets.filter(x=>x.area===loc.name).length;if(used){alert(`${loc.name} is used by ${used} preset item(s). Rename it or move those items before deleting it.`);return;}if(Object.values(showData.areaPhotos||{}).some(v=>v.area===loc.name&&(v.imageRefs||[]).length)){alert(`${loc.name} still has photo assignments. Remove them before deleting it.`);return;}showData.locations=showData.locations.filter(x=>x.id!==id);normalizeLocationOrders();await saveShow();renderManage();}
 
 function renderManagePeople() {
   const active = (showData.people||[]).slice().sort((a,b)=>(a.group||'').localeCompare(b.group||'') || a.name.localeCompare(b.name));
@@ -636,64 +530,14 @@ function openPersonForm(person={}) {
 }
 
 function renderManagePresets() {
-  const acts = ['I','II'];
-  manageBody(`<div class="toolbar"><button id="addPreset" class="btn primary compact">+ Add preset item</button></div>${acts.map(act=>{
-    const rows=showData.presets.filter(x=>x.act===act); const groups=groupBy(rows,x=>x.area);
-    return `<div class="eyebrow" style="margin:14px 2px 8px">Act ${act}</div>${Object.entries(groups).map(([area,items])=>`<section class="manage-section"><div class="manage-section-head"><div><strong>${esc(area)}</strong><div class="smalltext muted">${getAreaImageRefs(act,area).length} reference photo(s)</div></div><button class="mini-btn" data-area-photos="${esc(act)}||${esc(area)}">Photos</button></div>${items.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(x.item)}</div><div class="listrow-meta">${x.critical?'Critical · ':''}${esc(x.notes||'')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-preset="${x.id}">Edit</button><button class="mini-btn" data-del-preset="${x.id}">Delete</button></div></div>`).join('')}</section>`).join('')}`;
-  }).join('')}`);
-  $('#addPreset').addEventListener('click',()=>openPresetForm());
-  $$('[data-edit-preset]').forEach(b=>b.addEventListener('click',()=>openPresetForm(showData.presets.find(x=>x.id===b.dataset.editPreset))));
-  $$('[data-del-preset]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this preset item?'))return;showData.presets=showData.presets.filter(x=>x.id!==b.dataset.delPreset);await saveShow();renderManage();}));
-  $$('[data-area-photos]').forEach(b=>b.addEventListener('click',()=>{const [act,area]=b.dataset.areaPhotos.split('||');openAreaPhotoPicker(act,area);}));
+  const acts=sortedActs();manageBody(`<div class="toolbar"><button id="addPreset" class="btn primary compact">+ Add preset item</button><button id="addPresetLocation" class="btn secondary compact">+ Location</button></div>${acts.map((act,i)=>{const rows=showData.presets.filter(x=>x.act===act.id),groups=groupBy(rows,x=>x.area);return `<div class="eyebrow" style="margin:14px 2px 8px">${esc(act.name)} ${i===0?'· preshow':'· setup/changeover'}</div>${Object.keys(groups).length?Object.entries(groups).map(([area,items])=>`<section class="manage-section"><div class="manage-section-head"><div><strong>${esc(area)}</strong><div class="smalltext muted">${getAreaImageRefs(act.id,area).length} reference photo(s)</div></div><button class="mini-btn" data-area-photos="${esc(act.id)}||${esc(area)}">Photos</button></div>${items.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(x.item)}</div><div class="listrow-meta">${x.critical?'Critical · ':''}${esc(x.notes||'')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-preset="${x.id}">Edit</button><button class="mini-btn" data-del-preset="${x.id}">Delete</button></div></div>`).join('')}</section>`).join(''):'<div class="empty">No preset items.</div>'}`;}).join('')}`);$('#addPreset').addEventListener('click',()=>openPresetForm());$('#addPresetLocation').addEventListener('click',()=>openLocationForm());$$('[data-edit-preset]').forEach(b=>b.addEventListener('click',()=>openPresetForm(showData.presets.find(x=>x.id===b.dataset.editPreset))));$$('[data-del-preset]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this preset item?'))return;showData.presets=showData.presets.filter(x=>x.id!==b.dataset.delPreset);await saveShow();renderManage();}));$$('[data-area-photos]').forEach(b=>b.addEventListener('click',()=>{const [act,area]=b.dataset.areaPhotos.split('||');openAreaPhotoPicker(act,area);}));
 }
 
-function openPresetForm(x={}) {
-  openForm(x.id?'Edit preset item':'Add preset item',[
-    ['act','Act','select',x.act||'I',[['I','Act I'],['II','Act II']]],
-    ['area','Area / location','text',x.area||''],
-    ['item','Item','text',x.item||''],
-    ['kind','Type','text',x.kind||'Preset'],
-    ['notes','Notes','textarea',x.notes||''],
-    ['critical','Critical','checkbox',!!x.critical]
-  ], async vals => {
-    if (!vals.item.trim() || !vals.area.trim()) throw new Error('Area and item are required.');
-    if (x.id) Object.assign(x,vals,{updatedAt:now()});
-    else showData.presets.push({id:`preset-custom-${Date.now()}`,propId:'',...vals,updatedAt:now()});
-    await saveShow();
-    renderManage();
-  });
-}
+function openPresetForm(x={}) { const locs=locationOptions();if(!locs.length){alert('Add a location first under Manage → Locations.');manageTab='locations';renderManage();return;}openForm(x.id?'Edit preset item':'Add preset item',[['act','Act / section','select',x.act||sortedActs()[0]?.id||'',actOptions()],['area','Location / area','select',x.area||locs[0][0],locs],['item','Item / required state','text',x.item||''],['kind','Type','text',x.kind||'Preset'],['notes','Notes','textarea',x.notes||''],['critical','Critical','checkbox',!!x.critical]],async vals=>{if(!vals.item.trim()||!vals.area.trim())throw new Error('Location and item are required.');if(x.id)Object.assign(x,vals,{updatedAt:now()});else showData.presets.push({id:`preset-custom-${Date.now()}`,propId:'',...vals,updatedAt:now()});await saveShow();renderManage();}); }
 
-function renderManageRun() {
-  const rows=(showData.movements||[]).slice().sort(movementSort);
-  manageBody(`<div class="toolbar"><button id="addMove" class="btn primary compact">+ Add movement</button></div><section class="manage-section">${rows.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(x.propName)}</div><div class="listrow-meta">Act ${esc(x.act||'—')} · Sc ${esc(x.scene||'—')} · p${esc(x.page||'—')} · ${esc(x.person||'unassigned')}</div><div class="smalltext">${esc(x.cue||'')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-move="${x.id}">Edit</button><button class="mini-btn" data-del-move="${x.id}">Delete</button></div></div>`).join('')}</section>`);
-  $('#addMove').addEventListener('click',()=>openMoveForm());
-  $$('[data-edit-move]').forEach(b=>b.addEventListener('click',()=>openMoveForm(showData.movements.find(x=>x.id===b.dataset.editMove))));
-  $$('[data-del-move]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this movement?'))return;showData.movements=showData.movements.filter(x=>x.id!==b.dataset.delMove);await saveShow();renderManage();}));
-}
+function renderManageRun() { const rows=(showData.movements||[]).slice().sort(movementSort);manageBody(`<div class="toolbar"><button id="addMove" class="btn primary compact">+ Add movement</button></div><section class="manage-section">${rows.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(x.propName)}</div><div class="listrow-meta">${esc(actName(x.act))} · Sc ${esc(x.scene||'—')} · p${esc(x.page||'—')} · ${esc(x.person||'unassigned')}</div><div class="smalltext">${esc(x.cue||'')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-move="${x.id}">Edit</button><button class="mini-btn" data-del-move="${x.id}">Delete</button></div></div>`).join('')}</section>`);$('#addMove').addEventListener('click',()=>openMoveForm());$$('[data-edit-move]').forEach(b=>b.addEventListener('click',()=>openMoveForm(showData.movements.find(x=>x.id===b.dataset.editMove))));$$('[data-del-move]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this movement?'))return;showData.movements=showData.movements.filter(x=>x.id!==b.dataset.delMove);await saveShow();renderManage();})); }
 
-function openMoveForm(x={}) {
-  const names=(showData.props||[]).map(p=>p.name).sort();
-  openForm(x.id?'Edit movement':'Add movement',[
-    ['propName','Prop','select',x.propName||names[0]||'',names.map(v=>[v,v])],
-    ['act','Act','select',x.act||'I',[['I','Act I'],['II','Act II'],['','Unspecified']]],
-    ['scene','Scene','text',x.scene||''],
-    ['page','Page','text',x.page||''],
-    ['person','Who','text',x.person||''],
-    ['from','From','text',x.from||''],
-    ['to','To','text',x.to||''],
-    ['cue','Cue / instruction','textarea',x.cue||''],
-    ['notes','Notes','textarea',x.notes||''],
-    ['review','Needs review','checkbox',!!x.review]
-  ], async vals => {
-    const p=showData.props.find(p=>p.name===vals.propName);
-    const data={...vals,propId:p?.id||'',updatedAt:now()};
-    if (x.id) Object.assign(x,data);
-    else showData.movements.push({id:`move-custom-${Date.now()}`,order:99999,...data});
-    await saveShow();
-    renderManage();
-  });
-}
+function openMoveForm(x={}) { const names=(showData.props||[]).map(p=>p.name).sort();openForm(x.id?'Edit movement':'Add movement',[['propName','Prop','select',x.propName||names[0]||'',names.map(v=>[v,v])],['act','Act / section','select',x.act||sortedActs()[0]?.id||'',actOptions(true)],['scene','Scene','text',x.scene||''],['page','Page','text',x.page||''],['person','Who','text',x.person||''],['from','From','text',x.from||''],['to','To','text',x.to||''],['cue','Cue / instruction','textarea',x.cue||''],['notes','Notes','textarea',x.notes||''],['review','Needs review','checkbox',!!x.review]],async vals=>{const p=showData.props.find(p=>p.name===vals.propName),data={...vals,propId:p?.id||'',updatedAt:now()};if(x.id)Object.assign(x,data);else showData.movements.push({id:`move-custom-${Date.now()}`,order:99999,...data});await saveShow();renderManage();}); }
 
 function renderManageProps() {
   const rows=(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));
@@ -726,16 +570,7 @@ function imageUsage(id) {
   return Object.values(showData.areaPhotos||{}).filter(x=>(x.imageRefs||[]).includes(id)).length;
 }
 
-function renderManageImages() {
-  const act1=imageScopeList('I'), act2=imageScopeList('II');
-  manageBody(`<div class="toolbar"><button id="addAct1Photo" class="btn primary compact">+ Act I photo</button><button id="addAct2Photo" class="btn primary compact">+ Act II photo</button></div>
-    <div class="eyebrow" style="margin:12px 2px 8px">Act I image library</div><div class="image-grid">${act1.map(imageCardHTML).join('')}</div>
-    <div class="eyebrow" style="margin:18px 2px 8px">Act II image library</div><div class="image-grid">${act2.map(imageCardHTML).join('')}</div>`);
-  $('#addAct1Photo').addEventListener('click',()=>{pendingImageAction={type:'add',scope:'I'};chooseImageFile();});
-  $('#addAct2Photo').addEventListener('click',()=>{pendingImageAction={type:'add',scope:'II'};chooseImageFile();});
-  bindImageCardActions();
-  hydrateImages($('#manageBody'));
-}
+function renderManageImages() { const acts=sortedActs();manageBody(acts.map(act=>{const imgs=imageScopeList(act.id);return `<div class="toolbar" style="margin-top:10px"><div class="eyebrow">${esc(act.name)} image library</div><span class="spacer"></span><button class="btn primary compact" data-add-photo-act="${esc(act.id)}">+ Photo</button></div><div class="image-grid">${imgs.length?imgs.map(imageCardHTML).join(''):'<div class="empty">No photos for this act yet.</div>'}</div>`;}).join(''));$$('[data-add-photo-act]').forEach(b=>b.addEventListener('click',()=>{pendingImageAction={type:'add',scope:b.dataset.addPhotoAct};chooseImageFile();}));bindImageCardActions();hydrateImages($('#manageBody')); }
 
 function imageCardHTML(meta) {
   const used=imageUsage(meta.id);
@@ -848,67 +683,28 @@ function openForm(title, fields, onSave) {
   };
 }
 
-function renderBackup() {
-  const last=localStorage.getItem('lastExport')||'Not yet';
-  manageBody(`<section class="manage-section"><div class="manage-section-head"><strong>Backup / share</strong></div><div style="padding:14px"><p class="filemeta">Data-only export is small. Full backup also carries uploaded/replaced reference photos so another device can reproduce your exact setup.</p><div class="backup-actions"><button id="exportData" class="btn primary">Export data</button><button id="exportFull" class="btn secondary">Export full backup</button><button id="importMerge" class="btn secondary">Import + merge</button><button id="importReplace" class="btn secondary">Import + replace</button></div><p class="filemeta">Last export: ${esc(last)}</p></div></section><section class="manage-section"><div class="manage-section-head"><strong>Recovery</strong></div><div style="padding:14px"><p class="filemeta">Reset editable show data to the version bundled with this app. Uploaded image overrides remain until restored/deleted from Images.</p><button id="resetSeed" class="btn danger">Reset show data</button></div></section>`);
-  $('#exportData').addEventListener('click',exportData);
-  $('#exportFull').addEventListener('click',exportFullBackup);
-  $('#importMerge').addEventListener('click',()=>chooseImport('merge'));
-  $('#importReplace').addEventListener('click',()=>chooseImport('replace'));
-  $('#resetSeed').addEventListener('click',resetSeed);
-}
+function renderBackup() { const last=localStorage.getItem('lastExport')||'Not yet';manageBody(`<section class="manage-section"><div class="manage-section-head"><strong>Backup / share</strong></div><div style="padding:14px"><p class="filemeta">Data export contains this production's editable records. Full backup also includes locally uploaded/replaced reference photos.</p><div class="backup-actions"><button id="exportData" class="btn primary">Export data</button><button id="exportFull" class="btn secondary">Export full backup</button><button id="importMerge" class="btn secondary">Import + merge</button><button id="importReplace" class="btn secondary">Import + replace</button></div><p class="filemeta">Last export: ${esc(last)}</p></div></section><section class="manage-section"><div class="manage-section-head"><strong>Bundled starter</strong></div><div style="padding:14px"><p class="filemeta">Restore the Peter and the Starcatcher starter bundled with this app. This replaces the current production.</p><button id="resetSeed" class="btn danger">Restore Starcatcher starter</button></div></section>`);$('#exportData').addEventListener('click',exportData);$('#exportFull').addEventListener('click',()=>exportFullBackup(true));$('#importMerge').addEventListener('click',()=>chooseImport('merge'));$('#importReplace').addEventListener('click',()=>chooseImport('replace'));$('#resetSeed').addEventListener('click',resetSeed); }
 
 function downloadBlob(blob, filename) {
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
   localStorage.setItem('lastExport',new Date().toLocaleString());
 }
 
-function exportData() {
-  const data={...showData,exportedAt:now()};
-  downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),`Starcatcher-data-${localDateKey()}.json`);
-  renderBackup();
-}
+function exportData() { const data={...showData,exportedAt:now()};downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),`${slugify(showData.production?.title)}-data-${localDateKey()}.json`);if(currentView==='manage'&&manageTab==='backup')renderBackup(); }
 
 function blobToDataURL(blob) {
   return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});
 }
 
-async function exportFullBackup() {
-  const stored=await allStoredImages();
-  const images={};
-  for(const [id,blob] of Object.entries(stored))images[id]=await blobToDataURL(blob);
-  const payload={type:'starcatcher-full-backup',version:1,exportedAt:now(),show:showData,checks,images};
-  downloadBlob(new Blob([JSON.stringify(payload)],{type:'application/json'}),`Starcatcher-full-backup-${localDateKey()}.stage.json`);
-  renderBackup();
-}
+async function exportFullBackup(render=true) { const stored=await allStoredImages(),allowed=new Set(allImageMeta().map(x=>x.id)),images={};for(const [id,blob] of Object.entries(stored))if(allowed.has(id))images[id]=await blobToDataURL(blob);const payload={type:'stage-manager-full-backup',version:2,exportedAt:now(),show:showData,checks,images};downloadBlob(new Blob([JSON.stringify(payload)],{type:'application/json'}),`${slugify(showData.production?.title)}-full-backup-${localDateKey()}.stage.json`);if(render&&currentView==='manage'&&manageTab==='backup')renderBackup(); }
 
 function chooseImport(mode) {
   const input=$('#importFile');input.dataset.mode=mode;input.value='';input.click();
 }
 
-function validateShow(x) {
-  return x && typeof x==='object' && Array.isArray(x.props) && Array.isArray(x.movements) && Array.isArray(x.presets);
-}
+function validateShow(x) { return x&&typeof x==='object'&&Array.isArray(x.props)&&Array.isArray(x.movements)&&Array.isArray(x.presets)&&x.production&&typeof x.production==='object'; }
 
-async function handleImportFile(e) {
-  const file=e.target.files?.[0];if(!file)return;
-  try{
-    const parsed=JSON.parse(await file.text());
-    const isFull=parsed?.type==='starcatcher-full-backup' && validateShow(parsed.show);
-    const incoming=isFull?parsed.show:parsed;
-    if(!validateShow(incoming))throw new Error('Not a valid Starcatcher show-data file.');
-    const mode=e.target.dataset.mode||'merge';
-    if(mode==='replace'){
-      if(!confirm('Replace your local show data with this file?'))return;
-      showData=incoming;
-      if(isFull && parsed.checks)checks=parsed.checks;
-    } else showData=mergeShow(showData,incoming);
-    if(isFull && parsed.images){for(const [id,dataUrl] of Object.entries(parsed.images)){await putImageBlob(id,dataURLToBlob(dataUrl));clearImageCache(id);}}
-    await saveShow();await setKV(CHECK_KEY,checks);
-    alert(`Import complete (${mode})${isFull?' including custom photos':''}.`);
-    renderBackup();
-  }catch(err){alert(`Import failed: ${err.message||err}`);}
-}
+async function handleImportFile(e) { const file=e.target.files?.[0];if(!file)return;try{const parsed=JSON.parse(await file.text()),isFull=(parsed?.type==='stage-manager-full-backup'||parsed?.type==='starcatcher-full-backup')&&validateShow(parsed.show),incoming=ensureShowStructure(isFull?parsed.show:parsed);if(!validateShow(incoming))throw new Error('Not a valid stage-manager production file.');const mode=e.target.dataset.mode||'merge';if(mode==='replace'){if(!confirm(`Replace your local production with ${incoming.production?.title||'this production'}?`))return;showData=incoming;if(isFull&&parsed.checks)checks=parsed.checks;}else{if(showData.production?.id!==incoming.production?.id){if(!confirm(`This file is for a different production (${incoming.production?.title||'Untitled'}). Replace the current production instead of merging?`))return;showData=incoming;if(isFull&&parsed.checks)checks=parsed.checks;}else showData=mergeShow(showData,incoming);}if(isFull&&parsed.images){for(const [id,dataUrl] of Object.entries(parsed.images)){await putImageBlob(id,dataURLToBlob(dataUrl));clearImageCache(id);}}showData=ensureShowStructure(showData);presetMode=sortedActs()[0]?.id||'';runActFilter='ALL';await saveShow();await setKV(CHECK_KEY,checks);$('#productionTitle').textContent=showData.production.title;alert(`Import complete${isFull?' including custom photos':''}.`);renderBackup();}catch(err){alert(`Import failed: ${err.message||err}`);} }
 
 function dataURLToBlob(dataURL) {
   const [head,body]=dataURL.split(',');
@@ -922,42 +718,11 @@ function mergeById(local=[], incoming=[]) {
   return [...map.values()];
 }
 
-function mergeShow(a,b) {
-  const areaPhotos={...(a.areaPhotos||{})};
-  for(const [k,v] of Object.entries(b.areaPhotos||{})){
-    const cur=areaPhotos[k];
-    if(!cur || Date.parse(v.updatedAt||0)>=Date.parse(cur.updatedAt||0))areaPhotos[k]=v;
-  }
-  return {
-    ...a,
-    production:{...(a.production||{}),...(b.production||{})},
-    people:mergeById(a.people||[],b.people||[]),
-    props:mergeById(a.props||[],b.props||[]),
-    movements:mergeById(a.movements||[],b.movements||[]),
-    presets:mergeById(a.presets||[],b.presets||[]),
-    changeover:mergeById(a.changeover||[],b.changeover||[]),
-    images:mergeImageMeta(a.images||{},b.images||{}),
-    areaPhotos,
-    attendance:{...(a.attendance||{}),...(b.attendance||{})},
-    settings:{...(a.settings||{}),...(b.settings||{})},
-    appVersion:APP_VERSION
-  };
-}
+function mergeShow(a,b) { const areaPhotos={...(a.areaPhotos||{})};for(const [k,v] of Object.entries(b.areaPhotos||{})){const cur=areaPhotos[k];if(!cur||Date.parse(v.updatedAt||0)>=Date.parse(cur.updatedAt||0))areaPhotos[k]=v;}return ensureShowStructure({...a,production:{...(a.production||{}),...(b.production||{})},acts:mergeById(a.acts||[],b.acts||[]),locations:mergeById(a.locations||[],b.locations||[]),people:mergeById(a.people||[],b.people||[]),props:mergeById(a.props||[],b.props||[]),movements:mergeById(a.movements||[],b.movements||[]),presets:mergeById(a.presets||[],b.presets||[]),images:mergeImageMeta(a.images||{},b.images||{}),areaPhotos,attendance:{...(a.attendance||{}),...(b.attendance||{})},settings:{...(a.settings||{}),...(b.settings||{})},appVersion:APP_VERSION}); }
 
-async function resetSeed() {
-  if(!confirm('Reset all editable show data to the bundled starter copy?'))return;
-  showData=await (await fetch('data/seed-show.json',{cache:'no-store'})).json();
-  checks={};
-  await setKV(SHOW_KEY,showData);await setKV(CHECK_KEY,checks);
-  renderBackup();
-}
+async function resetSeed() { if(!confirm('Restore the bundled Peter and the Starcatcher starter? This replaces the current local production.'))return;showData=ensureShowStructure(await (await fetch('data/seed-show.json',{cache:'no-store'})).json());checks={};presetMode=sortedActs()[0]?.id||'';runActFilter='ALL';await setKV(SHOW_KEY,showData);await setKV(CHECK_KEY,checks);$('#productionTitle').textContent=showData.production.title;renderBackup(); }
 
-async function saveShow() {
-  showData.production ||= {};
-  showData.production.updatedAt=now();
-  showData.appVersion=APP_VERSION;
-  await setKV(SHOW_KEY,showData);
-}
+async function saveShow() { showData=ensureShowStructure(showData);showData.production.updatedAt=now();showData.appVersion=APP_VERSION;await setKV(SHOW_KEY,showData); }
 
 async function registerSW() {
   if('serviceWorker' in navigator){try{await navigator.serviceWorker.register('./sw.js')}catch(err){console.warn('Service worker registration failed',err);}}

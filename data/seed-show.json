@@ -1,12 +1,13 @@
 {
-  "schemaVersion": 3,
-  "appVersion": "0.3.0",
+  "schemaVersion": 4,
+  "appVersion": "0.4.0",
   "imageBundleVersion": "2026-10-06-c",
   "production": {
     "title": "Peter and the Starcatcher",
     "company": "Powerhouse Theatre Collaborative",
     "updatedAt": "2026-10-06T20:55:00-04:00",
-    "dataAuthority": "October 2026 Props + Presets documents; movement track from STARCATCHER PROPS(2).xlsx"
+    "dataAuthority": "October 2026 Props + Presets documents; movement track from STARCATCHER PROPS(2).xlsx",
+    "id": "peter-starcatcher-2026"
   },
   "people": [
     {
@@ -5727,314 +5728,7 @@
       "updatedAt": "2026-10-06T20:55:00-04:00"
     }
   ],
-  "changeover": [
-    {
-      "id": "change-preset-ii-changeover-cyc-in",
-      "area": "Changeover",
-      "item": "Cyc in",
-      "notes": "",
-      "presetId": "preset-ii-changeover-cyc-in",
-      "kind": "Scenic",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-changeover-green-border-in",
-      "area": "Changeover",
-      "item": "Green border in",
-      "notes": "",
-      "presetId": "preset-ii-changeover-green-border-in",
-      "kind": "Scenic",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-changeover-strike-all-ship-set-dressing",
-      "area": "Changeover",
-      "item": "Strike all ship set dressing",
-      "notes": "",
-      "presetId": "preset-ii-changeover-strike-all-ship-set-dressing",
-      "kind": "Scenic",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-center-stage-pallets-on-island-side",
-      "area": "Center Stage",
-      "item": "Pallets on island side",
-      "notes": "",
-      "presetId": "preset-ii-center-stage-pallets-on-island-side",
-      "kind": "Scenic",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-center-stage-sr-stairs-in-front",
-      "area": "Center Stage",
-      "item": "SR stairs in front",
-      "notes": "",
-      "presetId": "preset-ii-center-stage-sr-stairs-in-front",
-      "kind": "Scenic",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-platform-a-whole-pineapple-ds-offstage-corner",
-      "area": "Under Platform A",
-      "item": "Whole pineapple - DS/offstage corner",
-      "notes": "",
-      "presetId": "preset-ii-under-platform-a-whole-pineapple-ds-offstage-corner",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-platform-b-queen-s-trunk-with-lock-us-racquet",
-      "area": "Under Platform B",
-      "item": "Queen's trunk with lock US & racquet",
-      "notes": "",
-      "presetId": "preset-ii-under-platform-b-queen-s-trunk-with-lock-us-racquet",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-platform-c-add-pegged-greenery",
-      "area": "Platform C",
-      "item": "Add pegged greenery",
-      "notes": "",
-      "presetId": "preset-ii-platform-c-add-pegged-greenery",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-platform-c-2-flashlights-in-mr-grin-crate",
-      "area": "Platform C",
-      "item": "2 flashlights in Mr. Grin crate",
-      "notes": "",
-      "presetId": "preset-ii-platform-c-2-flashlights-in-mr-grin-crate",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-platform-c-mr-grin-s-teeth-in-crate",
-      "area": "Platform C",
-      "item": "Mr. Grin's teeth in crate",
-      "notes": "",
-      "presetId": "preset-ii-platform-c-mr-grin-s-teeth-in-crate",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-platform-e-thunder-drum-behind-stairs-behind-platform",
-      "area": "Under Platform E",
-      "item": "Thunder drum behind stairs/behind platform",
-      "notes": "",
-      "presetId": "preset-ii-under-platform-e-thunder-drum-behind-stairs-behind-platform",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-sr-stairs-ship-s-crates-barrels",
-      "area": "Under SR Stairs",
-      "item": "Ship's crates & barrels",
-      "notes": "",
-      "presetId": "preset-ii-under-sr-stairs-ship-s-crates-barrels",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-sr-stairs-add-greenery-masking",
-      "area": "Under SR Stairs",
-      "item": "Add greenery masking",
-      "notes": "",
-      "presetId": "preset-ii-under-sr-stairs-add-greenery-masking",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-sl-stairs-ship-s-crates-barrels",
-      "area": "Under SL Stairs",
-      "item": "Ship's crates & barrels",
-      "notes": "",
-      "presetId": "preset-ii-under-sl-stairs-ship-s-crates-barrels",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-under-sl-stairs-add-greenery-masking",
-      "area": "Under SL Stairs",
-      "item": "Add greenery masking",
-      "notes": "",
-      "presetId": "preset-ii-under-sl-stairs-add-greenery-masking",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-pallet-put-accordion-in-trunk",
-      "area": "SL Pallet",
-      "item": "Put accordion in trunk",
-      "notes": "",
-      "presetId": "preset-ii-sl-pallet-put-accordion-in-trunk",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-pallet-flip-net-up",
-      "area": "SL Pallet",
-      "item": "Flip net up",
-      "notes": "",
-      "presetId": "preset-ii-sl-pallet-flip-net-up",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-wing-2nd-wing-stairs",
-      "area": "SL Wing",
-      "item": "2nd wing - stairs",
-      "notes": "",
-      "presetId": "preset-ii-sl-wing-2nd-wing-stairs",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-wing-rolling-armchair-with-throne-dressing",
-      "area": "SL Wing",
-      "item": "Rolling armchair with throne dressing",
-      "notes": "",
-      "presetId": "preset-ii-sl-wing-rolling-armchair-with-throne-dressing",
-      "kind": "Preset",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sr-backstage-additions-alf-s-crate-with-dolly-pennant",
-      "area": "SR Backstage Additions",
-      "item": "Alf's crate with dolly & pennant",
-      "notes": "",
-      "presetId": "preset-ii-sr-backstage-additions-alf-s-crate-with-dolly-pennant",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-yellow-gag",
-      "area": "SL Backstage Additions",
-      "item": "Yellow gag",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-yellow-gag",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-peter-pan-book",
-      "area": "SL Backstage Additions",
-      "item": "Peter Pan book",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-peter-pan-book",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-wasp-model",
-      "area": "SL Backstage Additions",
-      "item": "WASP model",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-wasp-model",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-4-umbrellas-1-extra",
-      "area": "SL Backstage Additions",
-      "item": "4 umbrellas (1 extra)",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-4-umbrellas-1-extra",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-7-topiaries",
-      "area": "SL Backstage Additions",
-      "item": "7 topiaries",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-7-topiaries",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-lorienne",
-      "area": "SL Backstage Additions",
-      "item": "Grass skirt - Lorienne",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-lorienne",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-kyle",
-      "area": "SL Backstage Additions",
-      "item": "Grass skirt - Kyle",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-kyle",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-katie",
-      "area": "SL Backstage Additions",
-      "item": "Grass skirt - Katie",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-katie",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-phil",
-      "area": "SL Backstage Additions",
-      "item": "Grass skirt - Phil",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-phil",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-michael",
-      "area": "SL Backstage Additions",
-      "item": "Grass skirt - Michael",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-michael",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-jim",
-      "area": "SL Backstage Additions",
-      "item": "Grass skirt - Jim",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-jim",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-straw-hat-michael",
-      "area": "SL Backstage Additions",
-      "item": "Straw hat - Michael",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-straw-hat-michael",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-straw-hat-lorienne",
-      "area": "SL Backstage Additions",
-      "item": "Straw hat - Lorienne",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-straw-hat-lorienne",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    },
-    {
-      "id": "change-preset-ii-sl-backstage-additions-straw-hat-phil",
-      "area": "SL Backstage Additions",
-      "item": "Straw hat - Phil",
-      "notes": "",
-      "presetId": "preset-ii-sl-backstage-additions-straw-hat-phil",
-      "kind": "Backstage Prop",
-      "updatedAt": "2026-10-06T20:55:00-04:00"
-    }
-  ],
+  "changeover": [],
   "images": {
     "act1": [
       {
@@ -6562,8 +6256,496 @@
       "waiting",
       "here",
       "late",
+      "missing",
       "excused",
       "notcalled"
     ]
-  }
+  },
+  "acts": [
+    {
+      "id": "I",
+      "name": "Act I",
+      "order": 1,
+      "notes": "Preshow preset",
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "II",
+      "name": "Act II",
+      "order": 2,
+      "notes": "Setup/changeover before Act II",
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    }
+  ],
+  "locations": [
+    {
+      "id": "loc-01",
+      "name": "Stage / House",
+      "order": 1,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-02",
+      "name": "Center Stage",
+      "order": 2,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-03",
+      "name": "Platform A",
+      "order": 3,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-04",
+      "name": "Under Platform A",
+      "order": 4,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-05",
+      "name": "Platform B",
+      "order": 5,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-06",
+      "name": "Under Platform B",
+      "order": 6,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-07",
+      "name": "Platform C",
+      "order": 7,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-08",
+      "name": "Platform D",
+      "order": 8,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-09",
+      "name": "Under Platform D",
+      "order": 9,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-10",
+      "name": "Platform E",
+      "order": 10,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-11",
+      "name": "Under SR Stairs",
+      "order": 11,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-12",
+      "name": "Under SL Stairs",
+      "order": 12,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-13",
+      "name": "SR Pallet",
+      "order": 13,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-14",
+      "name": "SL Pallet",
+      "order": 14,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-15",
+      "name": "SR Wing",
+      "order": 15,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-16",
+      "name": "SL Wing",
+      "order": 16,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-17",
+      "name": "SR Backstage Props",
+      "order": 17,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-18",
+      "name": "SL Backstage Props",
+      "order": 18,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-19",
+      "name": "Changeover",
+      "order": 19,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-20",
+      "name": "Under Platform E",
+      "order": 20,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-21",
+      "name": "Act II Backstage Note",
+      "order": 21,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-22",
+      "name": "SR Backstage Additions",
+      "order": 22,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    },
+    {
+      "id": "loc-23",
+      "name": "SL Backstage Additions",
+      "order": 23,
+      "active": true,
+      "updatedAt": "2026-10-07T09:30:00-04:00"
+    }
+  ],
+  "legacyChangeover": [
+    {
+      "id": "change-preset-ii-changeover-cyc-in",
+      "area": "Changeover",
+      "item": "Cyc in",
+      "notes": "",
+      "presetId": "preset-ii-changeover-cyc-in",
+      "kind": "Scenic",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-changeover-green-border-in",
+      "area": "Changeover",
+      "item": "Green border in",
+      "notes": "",
+      "presetId": "preset-ii-changeover-green-border-in",
+      "kind": "Scenic",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-changeover-strike-all-ship-set-dressing",
+      "area": "Changeover",
+      "item": "Strike all ship set dressing",
+      "notes": "",
+      "presetId": "preset-ii-changeover-strike-all-ship-set-dressing",
+      "kind": "Scenic",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-center-stage-pallets-on-island-side",
+      "area": "Center Stage",
+      "item": "Pallets on island side",
+      "notes": "",
+      "presetId": "preset-ii-center-stage-pallets-on-island-side",
+      "kind": "Scenic",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-center-stage-sr-stairs-in-front",
+      "area": "Center Stage",
+      "item": "SR stairs in front",
+      "notes": "",
+      "presetId": "preset-ii-center-stage-sr-stairs-in-front",
+      "kind": "Scenic",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-platform-a-whole-pineapple-ds-offstage-corner",
+      "area": "Under Platform A",
+      "item": "Whole pineapple - DS/offstage corner",
+      "notes": "",
+      "presetId": "preset-ii-under-platform-a-whole-pineapple-ds-offstage-corner",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-platform-b-queen-s-trunk-with-lock-us-racquet",
+      "area": "Under Platform B",
+      "item": "Queen's trunk with lock US & racquet",
+      "notes": "",
+      "presetId": "preset-ii-under-platform-b-queen-s-trunk-with-lock-us-racquet",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-platform-c-add-pegged-greenery",
+      "area": "Platform C",
+      "item": "Add pegged greenery",
+      "notes": "",
+      "presetId": "preset-ii-platform-c-add-pegged-greenery",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-platform-c-2-flashlights-in-mr-grin-crate",
+      "area": "Platform C",
+      "item": "2 flashlights in Mr. Grin crate",
+      "notes": "",
+      "presetId": "preset-ii-platform-c-2-flashlights-in-mr-grin-crate",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-platform-c-mr-grin-s-teeth-in-crate",
+      "area": "Platform C",
+      "item": "Mr. Grin's teeth in crate",
+      "notes": "",
+      "presetId": "preset-ii-platform-c-mr-grin-s-teeth-in-crate",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-platform-e-thunder-drum-behind-stairs-behind-platform",
+      "area": "Under Platform E",
+      "item": "Thunder drum behind stairs/behind platform",
+      "notes": "",
+      "presetId": "preset-ii-under-platform-e-thunder-drum-behind-stairs-behind-platform",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-sr-stairs-ship-s-crates-barrels",
+      "area": "Under SR Stairs",
+      "item": "Ship's crates & barrels",
+      "notes": "",
+      "presetId": "preset-ii-under-sr-stairs-ship-s-crates-barrels",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-sr-stairs-add-greenery-masking",
+      "area": "Under SR Stairs",
+      "item": "Add greenery masking",
+      "notes": "",
+      "presetId": "preset-ii-under-sr-stairs-add-greenery-masking",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-sl-stairs-ship-s-crates-barrels",
+      "area": "Under SL Stairs",
+      "item": "Ship's crates & barrels",
+      "notes": "",
+      "presetId": "preset-ii-under-sl-stairs-ship-s-crates-barrels",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-under-sl-stairs-add-greenery-masking",
+      "area": "Under SL Stairs",
+      "item": "Add greenery masking",
+      "notes": "",
+      "presetId": "preset-ii-under-sl-stairs-add-greenery-masking",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-pallet-put-accordion-in-trunk",
+      "area": "SL Pallet",
+      "item": "Put accordion in trunk",
+      "notes": "",
+      "presetId": "preset-ii-sl-pallet-put-accordion-in-trunk",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-pallet-flip-net-up",
+      "area": "SL Pallet",
+      "item": "Flip net up",
+      "notes": "",
+      "presetId": "preset-ii-sl-pallet-flip-net-up",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-wing-2nd-wing-stairs",
+      "area": "SL Wing",
+      "item": "2nd wing - stairs",
+      "notes": "",
+      "presetId": "preset-ii-sl-wing-2nd-wing-stairs",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-wing-rolling-armchair-with-throne-dressing",
+      "area": "SL Wing",
+      "item": "Rolling armchair with throne dressing",
+      "notes": "",
+      "presetId": "preset-ii-sl-wing-rolling-armchair-with-throne-dressing",
+      "kind": "Preset",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sr-backstage-additions-alf-s-crate-with-dolly-pennant",
+      "area": "SR Backstage Additions",
+      "item": "Alf's crate with dolly & pennant",
+      "notes": "",
+      "presetId": "preset-ii-sr-backstage-additions-alf-s-crate-with-dolly-pennant",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-yellow-gag",
+      "area": "SL Backstage Additions",
+      "item": "Yellow gag",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-yellow-gag",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-peter-pan-book",
+      "area": "SL Backstage Additions",
+      "item": "Peter Pan book",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-peter-pan-book",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-wasp-model",
+      "area": "SL Backstage Additions",
+      "item": "WASP model",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-wasp-model",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-4-umbrellas-1-extra",
+      "area": "SL Backstage Additions",
+      "item": "4 umbrellas (1 extra)",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-4-umbrellas-1-extra",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-7-topiaries",
+      "area": "SL Backstage Additions",
+      "item": "7 topiaries",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-7-topiaries",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-lorienne",
+      "area": "SL Backstage Additions",
+      "item": "Grass skirt - Lorienne",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-lorienne",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-kyle",
+      "area": "SL Backstage Additions",
+      "item": "Grass skirt - Kyle",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-kyle",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-katie",
+      "area": "SL Backstage Additions",
+      "item": "Grass skirt - Katie",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-katie",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-phil",
+      "area": "SL Backstage Additions",
+      "item": "Grass skirt - Phil",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-phil",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-michael",
+      "area": "SL Backstage Additions",
+      "item": "Grass skirt - Michael",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-michael",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-grass-skirt-jim",
+      "area": "SL Backstage Additions",
+      "item": "Grass skirt - Jim",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-grass-skirt-jim",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-straw-hat-michael",
+      "area": "SL Backstage Additions",
+      "item": "Straw hat - Michael",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-straw-hat-michael",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-straw-hat-lorienne",
+      "area": "SL Backstage Additions",
+      "item": "Straw hat - Lorienne",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-straw-hat-lorienne",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    },
+    {
+      "id": "change-preset-ii-sl-backstage-additions-straw-hat-phil",
+      "area": "SL Backstage Additions",
+      "item": "Straw hat - Phil",
+      "notes": "",
+      "presetId": "preset-ii-sl-backstage-additions-straw-hat-phil",
+      "kind": "Backstage Prop",
+      "updatedAt": "2026-10-06T20:55:00-04:00"
+    }
+  ]
 }
