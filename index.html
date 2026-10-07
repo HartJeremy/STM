@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#151920">
+  <meta name="theme-color" content="#11161d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Starcatcher Stage Manager</title>
@@ -14,22 +14,47 @@
 <body>
 <div id="app">
   <header class="topbar">
-    <div><div class="eyebrow">STAGE MANAGER</div><h1 id="productionTitle">Peter and the Starcatcher</h1></div>
-    <button id="installBtn" class="ghost small" hidden>Install</button>
+    <div class="titleblock">
+      <div id="productionTitle" class="production-title">Peter and the Starcatcher</div>
+      <h1 id="pageTitle">Tonight</h1>
+    </div>
+    <button id="installBtn" class="btn secondary compact" hidden>Install</button>
   </header>
+
   <main id="view" aria-live="polite"></main>
+
   <nav class="bottomnav" aria-label="Main navigation">
-    <button data-view="home" class="navbtn active"><span>⌂</span>Home</button>
-    <button data-view="act1" class="navbtn"><span>Ⅰ</span>Act I</button>
-    <button data-view="run" class="navbtn"><span>▶</span>Run</button>
-    <button data-view="change" class="navbtn"><span>⇄</span>Change</button>
-    <button data-view="act2" class="navbtn"><span>Ⅱ</span>Act II</button>
-    <button data-view="edit" class="navbtn"><span>✎</span>Edit</button>
+    <button data-view="tonight" class="navbtn active"><span class="navicon">⌂</span><span>Tonight</span></button>
+    <button data-view="presets" class="navbtn"><span class="navicon">✓</span><span>Presets</span></button>
+    <button data-view="run" class="navbtn"><span class="navicon">▶</span><span>Run</span></button>
+    <button data-view="checkin" class="navbtn"><span class="navicon">●</span><span>Check-in</span></button>
+    <button data-view="manage" class="navbtn"><span class="navicon">⚙</span><span>Manage</span></button>
   </nav>
 </div>
-<dialog id="photoDialog"><button id="closePhoto" class="dialog-close" aria-label="Close photo">×</button><img id="photoFull" alt="Preset reference"><div id="photoCaption"></div></dialog>
-<dialog id="formDialog"><form id="editForm" method="dialog"><div id="formFields"></div><div class="dialog-actions"><button value="cancel" class="ghost">Cancel</button><button id="saveEdit" value="default" class="primary">Save</button></div></form></dialog>
+
+<dialog id="photoDialog" class="photo-dialog">
+  <div class="dialog-head"><strong id="photoCaption">Reference photo</strong><button id="closePhoto" class="iconbtn" type="button" aria-label="Close">×</button></div>
+  <img id="photoFull" alt="Preset reference">
+</dialog>
+
+<dialog id="formDialog" class="form-dialog">
+  <form id="editForm" method="dialog">
+    <div class="dialog-head"><strong id="formTitle">Edit</strong><button id="closeForm" class="iconbtn" type="button" aria-label="Close">×</button></div>
+    <div id="formFields"></div>
+    <div class="dialog-actions"><button type="button" id="cancelEdit" class="btn secondary">Cancel</button><button type="submit" class="btn primary">Save</button></div>
+  </form>
+</dialog>
+
+<dialog id="photoPickerDialog" class="picker-dialog">
+  <div class="dialog-head"><div><strong id="photoPickerTitle">Reference photos</strong><div class="muted smalltext">Choose the photos that belong to this location.</div></div><button id="closePhotoPicker" class="iconbtn" type="button" aria-label="Close">×</button></div>
+  <div class="picker-actions"><button id="uploadFromPicker" type="button" class="btn secondary">+ Upload photo</button></div>
+  <div id="photoPickerGrid" class="image-grid"></div>
+  <div class="dialog-actions"><button id="cancelPhotoPicker" type="button" class="btn secondary">Cancel</button><button id="savePhotoPicker" type="button" class="btn primary">Save photos</button></div>
+</dialog>
+
 <input id="importFile" type="file" accept=".json,.stage,application/json" hidden>
+<input id="imageFile" type="file" accept="image/*" hidden>
+
 <script src="app.js"></script>
 </body>
 </html>

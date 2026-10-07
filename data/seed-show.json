@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 2,
-  "appVersion": "0.2.0",
-  "imageBundleVersion": "2026-10-06-b",
+  "schemaVersion": 3,
+  "appVersion": "0.3.0",
+  "imageBundleVersion": "2026-10-06-c",
   "production": {
     "title": "Peter and the Starcatcher",
     "company": "Powerhouse Theatre Collaborative",
@@ -13,91 +13,145 @@
       "id": "person-01",
       "role": "Black Stache",
       "name": "Joel Iwaskiewicz",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-02",
       "role": "Molly Aster",
       "name": "Emma Molloy",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-03",
       "role": "Boy/Peter",
       "name": "Maci Johnson",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-04",
       "role": "Prentiss",
       "name": "Deidre Cullen",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-05",
       "role": "Ted",
       "name": "Tess Hodges",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-06",
       "role": "Smee/Greggors",
       "name": "David Nelson",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-07",
       "role": "Lord Leonard Aster",
       "name": "Phil Dunbridge",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-08",
       "role": "Mrs. Bumbrake",
       "name": "Kyle Sidders",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-09",
       "role": "Bill Slank",
       "name": "Lorienne Valovanie",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-10",
       "role": "Alf",
       "name": "Katie Duncan",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-11",
       "role": "Fighting Prawn",
       "name": "Jim Gocha",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-12",
       "role": "Hawking Clam/Mother",
       "name": "Rachel Hunton",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-13",
       "role": "Teacher",
       "name": "Jennifer Cote",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-14",
       "role": "Captain Robert Falcon Scott/Mack",
       "name": "Michael Costa",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
     },
     {
       "id": "person-15",
       "role": "Grempkin/Sanchez/Boxing Announcer",
       "name": "Garrison Barron",
-      "updatedAt": "2026-10-06T16:26:00-04:00"
+      "updatedAt": "2026-10-06T16:26:00-04:00",
+      "group": "cast",
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "person-stage-manager",
+      "role": "Stage Manager",
+      "name": "Jeremy Hart",
+      "group": "crew",
+      "active": true,
+      "notes": "",
+      "updatedAt": "2026-10-06T21:30:00-04:00"
     }
   ],
   "props": [
@@ -5986,180 +6040,530 @@
       {
         "id": "act1-img-01",
         "src": "images/act1/act1-01.jpg",
-        "label": "Act I preset reference 01"
+        "label": "Act I preset reference 01",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-02",
         "src": "images/act1/act1-02.jpg",
-        "label": "Act I preset reference 02"
+        "label": "Act I preset reference 02",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-03",
         "src": "images/act1/act1-03.jpg",
-        "label": "Act I preset reference 03"
+        "label": "Act I preset reference 03",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-04",
         "src": "images/act1/act1-04.jpg",
-        "label": "Act I preset reference 04"
+        "label": "Act I preset reference 04",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-05",
         "src": "images/act1/act1-05.jpg",
-        "label": "Act I preset reference 05"
+        "label": "Act I preset reference 05",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-06",
         "src": "images/act1/act1-06.jpg",
-        "label": "Act I preset reference 06"
+        "label": "Act I preset reference 06",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-07",
         "src": "images/act1/act1-07.jpg",
-        "label": "Act I preset reference 07"
+        "label": "Act I preset reference 07",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-08",
         "src": "images/act1/act1-08.jpg",
-        "label": "Act I preset reference 08"
+        "label": "Act I preset reference 08",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-09",
         "src": "images/act1/act1-09.jpg",
-        "label": "Act I preset reference 09"
+        "label": "Act I preset reference 09",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-10",
         "src": "images/act1/act1-10.jpg",
-        "label": "Act I preset reference 10"
+        "label": "Act I preset reference 10",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-11",
         "src": "images/act1/act1-11.jpg",
-        "label": "Act I preset reference 11"
+        "label": "Act I preset reference 11",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-12",
         "src": "images/act1/act1-12.jpg",
-        "label": "Act I preset reference 12"
+        "label": "Act I preset reference 12",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-13",
         "src": "images/act1/act1-13.jpg",
-        "label": "Act I preset reference 13"
+        "label": "Act I preset reference 13",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-14",
         "src": "images/act1/act1-14.jpg",
-        "label": "Act I preset reference 14"
+        "label": "Act I preset reference 14",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-15",
         "src": "images/act1/act1-15.jpg",
-        "label": "Act I preset reference 15"
+        "label": "Act I preset reference 15",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-16",
         "src": "images/act1/act1-16.jpg",
-        "label": "Act I preset reference 16"
+        "label": "Act I preset reference 16",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-17",
         "src": "images/act1/act1-17.jpg",
-        "label": "Act I preset reference 17"
+        "label": "Act I preset reference 17",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-18",
         "src": "images/act1/act1-18.jpg",
-        "label": "Act I preset reference 18"
+        "label": "Act I preset reference 18",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-19",
         "src": "images/act1/act1-19.jpg",
-        "label": "Act I preset reference 19"
+        "label": "Act I preset reference 19",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-20",
         "src": "images/act1/act1-20.jpg",
-        "label": "Act I preset reference 20"
+        "label": "Act I preset reference 20",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-21",
         "src": "images/act1/act1-21.jpg",
-        "label": "Act I preset reference 21"
+        "label": "Act I preset reference 21",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-22",
         "src": "images/act1/act1-22.jpg",
-        "label": "Act I preset reference 22"
+        "label": "Act I preset reference 22",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-23",
         "src": "images/act1/act1-23.jpg",
-        "label": "Act I preset reference 23"
+        "label": "Act I preset reference 23",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-24",
         "src": "images/act1/act1-24.jpg",
-        "label": "Act I preset reference 24"
+        "label": "Act I preset reference 24",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act1-img-25",
         "src": "images/act1/act1-25.jpg",
-        "label": "Act I preset reference 25"
+        "label": "Act I preset reference 25",
+        "scope": "I",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       }
     ],
     "act2": [
       {
         "id": "act2-img-01",
         "src": "images/act2/act2-01.jpg",
-        "label": "Act II preset reference 01"
+        "label": "Act II preset reference 01",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-02",
         "src": "images/act2/act2-02.jpg",
-        "label": "Act II preset reference 02"
+        "label": "Act II preset reference 02",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-03",
         "src": "images/act2/act2-03.jpg",
-        "label": "Act II preset reference 03"
+        "label": "Act II preset reference 03",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-04",
         "src": "images/act2/act2-04.jpg",
-        "label": "Act II preset reference 04"
+        "label": "Act II preset reference 04",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-05",
         "src": "images/act2/act2-05.jpg",
-        "label": "Act II preset reference 05"
+        "label": "Act II preset reference 05",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-06",
         "src": "images/act2/act2-06.jpg",
-        "label": "Act II preset reference 06"
+        "label": "Act II preset reference 06",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-07",
         "src": "images/act2/act2-07.jpg",
-        "label": "Act II preset reference 07"
+        "label": "Act II preset reference 07",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-08",
         "src": "images/act2/act2-08.jpg",
-        "label": "Act II preset reference 08"
+        "label": "Act II preset reference 08",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-09",
         "src": "images/act2/act2-09.jpg",
-        "label": "Act II preset reference 09"
+        "label": "Act II preset reference 09",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       },
       {
         "id": "act2-img-10",
         "src": "images/act2/act2-10.jpg",
-        "label": "Act II preset reference 10"
+        "label": "Act II preset reference 10",
+        "scope": "II",
+        "source": "bundled",
+        "hidden": false,
+        "updatedAt": "2026-10-06T21:30:00-04:00"
       }
+    ],
+    "custom": []
+  },
+  "areaPhotos": {
+    "I::Platform B": {
+      "act": "I",
+      "area": "Platform B",
+      "imageRefs": [
+        "act1-img-11"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Under Platform B": {
+      "act": "I",
+      "area": "Under Platform B",
+      "imageRefs": [
+        "act1-img-17",
+        "act1-img-18"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Platform C": {
+      "act": "I",
+      "area": "Platform C",
+      "imageRefs": [
+        "act1-img-13",
+        "act1-img-14",
+        "act1-img-15"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Platform D": {
+      "act": "I",
+      "area": "Platform D",
+      "imageRefs": [
+        "act1-img-16"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Under Platform D": {
+      "act": "I",
+      "area": "Under Platform D",
+      "imageRefs": [
+        "act1-img-18",
+        "act1-img-19"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Platform E": {
+      "act": "I",
+      "area": "Platform E",
+      "imageRefs": [
+        "act1-img-16",
+        "act1-img-18"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Under SR Stairs": {
+      "act": "I",
+      "area": "Under SR Stairs",
+      "imageRefs": [
+        "act1-img-09"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::Under SL Stairs": {
+      "act": "I",
+      "area": "Under SL Stairs",
+      "imageRefs": [
+        "act1-img-09",
+        "act1-img-10"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::SR Pallet": {
+      "act": "I",
+      "area": "SR Pallet",
+      "imageRefs": [
+        "act1-img-24"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::SL Pallet": {
+      "act": "I",
+      "area": "SL Pallet",
+      "imageRefs": [
+        "act1-img-25"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::SR Wing": {
+      "act": "I",
+      "area": "SR Wing",
+      "imageRefs": [
+        "act1-img-19"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::SL Wing": {
+      "act": "I",
+      "area": "SL Wing",
+      "imageRefs": [
+        "act1-img-19"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::SR Backstage Props": {
+      "act": "I",
+      "area": "SR Backstage Props",
+      "imageRefs": [
+        "act1-img-01"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "I::SL Backstage Props": {
+      "act": "I",
+      "area": "SL Backstage Props",
+      "imageRefs": [
+        "act1-img-21",
+        "act1-img-22",
+        "act1-img-23"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Center Stage": {
+      "act": "II",
+      "area": "Center Stage",
+      "imageRefs": [
+        "act2-img-04",
+        "act2-img-05"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Under Platform A": {
+      "act": "II",
+      "area": "Under Platform A",
+      "imageRefs": [
+        "act2-img-07",
+        "act2-img-08"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Under Platform B": {
+      "act": "II",
+      "area": "Under Platform B",
+      "imageRefs": [
+        "act2-img-01"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Platform C": {
+      "act": "II",
+      "area": "Platform C",
+      "imageRefs": [
+        "act2-img-04"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Under Platform E": {
+      "act": "II",
+      "area": "Under Platform E",
+      "imageRefs": [
+        "act2-img-02"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Under SR Stairs": {
+      "act": "II",
+      "area": "Under SR Stairs",
+      "imageRefs": [
+        "act2-img-06",
+        "act2-img-08"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::Under SL Stairs": {
+      "act": "II",
+      "area": "Under SL Stairs",
+      "imageRefs": [
+        "act2-img-06",
+        "act2-img-07"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::SL Pallet": {
+      "act": "II",
+      "area": "SL Pallet",
+      "imageRefs": [
+        "act2-img-10"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    },
+    "II::SL Wing": {
+      "act": "II",
+      "area": "SL Wing",
+      "imageRefs": [
+        "act2-img-03",
+        "act2-img-05"
+      ],
+      "updatedAt": "2026-10-06T21:30:00-04:00"
+    }
+  },
+  "attendance": {},
+  "settings": {
+    "attendanceStatuses": [
+      "waiting",
+      "here",
+      "late",
+      "excused",
+      "notcalled"
     ]
   }
 }
