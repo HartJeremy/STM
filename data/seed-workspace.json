@@ -1,6 +1,6 @@
 {
   "schemaVersion": 5,
-  "appVersion": "0.5.5",
+  "appVersion": "0.6.0",
   "workspaceId": "60a8251a-59d1-59e4-9d05-9c67d886104c",
   "organization": {
     "id": "53bdc4f8-6da8-512e-b0c6-d132fd4ae425",
@@ -11,7 +11,7 @@
   "productions": [
     {
       "schemaVersion": 5,
-      "appVersion": "0.5.5",
+      "appVersion": "0.6.0",
       "imageBundleVersion": "2026-10-06-c",
       "production": {
         "title": "Peter and the Starcatcher",
@@ -885,7 +885,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-002-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "2a8a6f1b-4050-5427-bdb9-41117d24c1cf",
@@ -904,7 +906,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-002-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "adbf59d3-a685-57ab-8c0d-cea610ad450a",
@@ -923,7 +927,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-002-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "c36f6a3f-82a7-5d73-8d33-9e275292c5ca",
@@ -942,7 +948,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-003-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "6dba6814-dd18-58bd-8539-5e09b8b774b4",
@@ -961,7 +969,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-004-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "5aa3ad09-ecf9-5119-9777-ccbb4d6d7af4",
@@ -980,7 +990,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-005-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "451bddc9-ed7f-5d52-8297-7774f12d412a",
@@ -999,7 +1011,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-006-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "c8375e62-a815-580e-b19d-42fdabf11035",
@@ -1018,7 +1032,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-007-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "26c49b11-1698-5e5c-87a8-b64861d81a68",
@@ -1037,7 +1053,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-007-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "e67e9709-b61b-515d-93f6-b23f09b3633a",
@@ -1056,7 +1074,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "da2ab2a6-5668-5a2d-a2bc-c462095f289b",
@@ -1075,7 +1095,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "d84ceeca-f3b9-5579-a4aa-c224efd559c4",
@@ -1094,7 +1116,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "b78346e4-b077-5ca6-930f-0ce8b3de2bea",
@@ -1113,7 +1137,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-3",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "cb81c4dd-54cc-5e83-a726-19c9538660b9",
@@ -1132,7 +1158,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-4",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "b0df5898-c819-523f-bca7-8c7e43f53ffa",
@@ -1151,7 +1179,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-5",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "1d2401c7-1a4a-5733-a5ed-0ce1d09bda46",
@@ -1170,7 +1200,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-008-6",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "b8511d6f-6162-5be2-911a-1851f3dbd7e3",
@@ -1189,7 +1221,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "7625ff40-ef9d-5b12-b44b-cfa7026b1d1d",
@@ -1208,7 +1242,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "bf177cf1-ec9d-52a3-a9c4-83db8211f87d",
@@ -1227,7 +1263,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "32579799-16ca-5be1-ab4b-915ec6a8b582",
@@ -1246,7 +1284,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-3",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "8eec0f86-48bd-5cd5-a133-02a2316af93e",
@@ -1265,7 +1305,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-4",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "bb060644-e073-54ff-84eb-c7bb63cddec2",
@@ -1284,7 +1326,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-5",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "9b6083ba-78f1-5736-b24b-6102a0ca700b",
@@ -1303,7 +1347,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-011-6",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "a119b997-15a9-58fa-afcf-d35135d837d8",
@@ -1322,7 +1368,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-012-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "55afc747-4099-5e71-8c52-83a4eff9e7c2",
@@ -1341,7 +1389,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-013-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "156a77c6-161c-58ba-abd5-3a395e6a64d1",
@@ -1360,7 +1410,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-014-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "8b8ec256-82e3-5f2f-8567-5fddb1e991fd",
@@ -1379,7 +1431,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-014-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "bfd31ef0-414d-5b2a-a860-337b4cb8a897",
@@ -1398,7 +1452,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-015-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "847c9493-62c5-5d06-8dbc-a5bedeebb8d2",
@@ -1417,7 +1473,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-016-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "a6b92d90-af32-5621-9304-195695901d0f",
@@ -1436,7 +1494,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-016-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "80b1566d-f021-52e2-aa20-d9e2eda2d2d6",
@@ -1455,7 +1515,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-016-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "a9d34380-ecd9-5ce2-9778-48146158f6db",
@@ -1474,7 +1536,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-016-3",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "6c9c4154-38f6-5812-9fe7-77bc741abdd3",
@@ -1493,7 +1557,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-017-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "2d3f0dfb-7166-5885-bb72-d5d309bcadc1",
@@ -1512,7 +1578,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-017-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "4bed1413-6397-539c-8550-73388faf3fb6",
@@ -1531,7 +1599,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-018-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "3aec9a15-1221-50e6-9a24-c9f0784f41c6",
@@ -1550,7 +1620,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-021-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "4cfeb837-091e-5117-a380-6f15bf36ef39",
@@ -1569,7 +1641,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-023-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "f3380797-6806-5ec6-b5c6-4187dc8a55eb",
@@ -1588,7 +1662,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-023-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "02147f5d-1fcc-5827-94d5-d7fae3a0d54a",
@@ -1607,7 +1683,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-023-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "980c4cbf-0a6c-548b-ae92-77543fd92c5d",
@@ -1626,7 +1704,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-026-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "15c0f932-b42c-5c08-b83a-3d97678430ad",
@@ -1645,7 +1725,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-026-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "98d7957c-2b22-5873-a13e-f7b2a9257c9a",
@@ -1664,7 +1746,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-026-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "0dc55e97-7e9b-59e0-b755-72285687fb2c",
@@ -1683,7 +1767,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-027-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "f7abf293-a4f8-57b0-9908-5e643c783b96",
@@ -1702,7 +1788,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-028-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "60deb075-a4ff-50b2-83fc-a434f7155d01",
@@ -1721,7 +1809,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-029-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "84145880-0ed7-5aa4-8f7f-0ffdf190ffd0",
@@ -1740,7 +1830,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-030-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "4997ef36-b841-5bb6-8ea6-967d03423630",
@@ -1759,7 +1851,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-032-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "6a9560e2-f86b-5a2d-9f72-9a88f863826c",
@@ -1778,7 +1872,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-033-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "46cdbca8-0c7f-5d92-b6e9-b2c69641a654",
@@ -1797,7 +1893,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-034-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "a97bd421-bc80-567c-b4ee-a0a2d7f3c7de",
@@ -1816,7 +1914,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-036-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "ac3104e4-3986-5794-9420-b56b8fa831ec",
@@ -1835,7 +1935,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-041-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "96a84974-ccef-51d8-a521-786875c8aa12",
@@ -1854,7 +1956,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-041-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "0efd852d-cbef-568a-8a0f-3ac08c5e95b1",
@@ -1873,7 +1977,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-043-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "893ad372-8549-5f73-b82c-df9b7e550b66",
@@ -1892,7 +1998,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-049-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "12ca8bdd-f2df-5a45-8a46-21c8a6f73841",
@@ -1911,7 +2019,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-049-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "95798383-8ca1-5eae-afd0-a2f6bf730d00",
@@ -1930,7 +2040,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-058-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "113b84f1-d89e-591d-be47-4853b8c71f0a",
@@ -1949,7 +2061,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-059-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "abe183b1-d137-56a8-9bfa-8b932c0ed715",
@@ -1968,7 +2082,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-059-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "7ffcb6ae-d89b-54ac-b830-2d86c071f2e4",
@@ -1987,7 +2103,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-065-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "49e02f8b-e8e7-5b7a-8d62-93c2159dfc01",
@@ -2006,7 +2124,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-065-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "c5cd8472-64cc-5bd0-bb73-9e0d5a66a85b",
@@ -2025,7 +2145,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-066-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "64ad808a-1bee-5e54-b5c2-ed29322bb2ca",
@@ -2044,7 +2166,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-070-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "c6c2911c-3f31-5a69-aac7-5ee26e1cd735",
@@ -2063,7 +2187,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-071-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "35886aa5-9ea6-59c9-b6f4-70db8edb1fc8",
@@ -2082,7 +2208,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-072-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "aa89ac62-35af-50d7-90ca-beb3ed5bc46a",
@@ -2101,7 +2229,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-073-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "860be8e6-1874-53c5-a33c-77fb911c1554",
@@ -2120,7 +2250,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-075-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "d2915315-0bd0-5543-910b-127ccd07f8c7",
@@ -2139,7 +2271,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-079-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "30c28dd2-5a29-50e3-a72a-7743bbf1dbc2",
@@ -2158,7 +2292,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-080-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "7eced636-6a44-5ced-b387-af0a66c0cc30",
@@ -2177,7 +2313,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-081-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "24625ca2-3be1-5f23-b7af-f2db422bf861",
@@ -2196,7 +2334,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-082-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "54fceb2e-106f-5482-a75c-522ad70126d0",
@@ -2215,7 +2355,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-083-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "7587cf25-5584-5d0e-8cdf-b0a514ceaf74",
@@ -2234,7 +2376,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-084-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "3c50c8dd-df3b-528e-bd77-da9a6d5e4d3a",
@@ -2253,7 +2397,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-085-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "6b4b95d3-9932-54a4-bca3-f6d2c89a10ae",
@@ -2272,7 +2418,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-086-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "ff8e53a3-d6ed-516e-a6e5-fde1028d9fee",
@@ -2291,7 +2439,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-086-1",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "3a32f5f5-d078-54ca-843c-69ed67ff9161",
@@ -2310,7 +2460,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-086-2",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "0a3dfb1c-dafa-5835-864e-33064d745c2f",
@@ -2329,7 +2481,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-087-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "c5e744d4-f687-5589-9c6f-3261357bc665",
@@ -2348,7 +2502,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-088-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "3b5c141a-e061-5983-a885-c31e760db67f",
@@ -2367,7 +2523,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-089-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         },
         {
           "id": "ebb88914-4923-5442-926f-61b625620a85",
@@ -2386,7 +2544,9 @@
           "updatedAt": "2026-10-06T16:26:00-04:00",
           "legacyId": "move-090-0",
           "fromLocationId": null,
-          "toLocationId": null
+          "toLocationId": null,
+          "personIds": [],
+          "itemType": "prop"
         }
       ],
       "presets": [
@@ -5272,7 +5432,16 @@
           "notcalled"
         ],
         "canonicalPropsRevision": 2,
-        "canonicalPropsAuthority": "Backstage Props List - October 2026"
+        "canonicalPropsAuthority": "Backstage Props List - October 2026",
+        "stageMarks": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ]
       },
       "acts": [
         {
@@ -5820,7 +5989,9 @@
           "legacyId": "change-preset-ii-sl-backstage-additions-straw-hat-phil"
         }
       ],
-      "checks": {}
+      "checks": {},
+      "setPieces": [],
+      "blocking": []
     }
   ],
   "people": [
