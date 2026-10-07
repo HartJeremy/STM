@@ -1,42 +1,55 @@
-# Stage Manager Quick List PWA
+# Stage Manager Workspace v0.5.0
 
-Version 0.4.0
+Offline-first PWA for stage management on an iPad/Chromebook. The app now supports multiple simultaneous productions in one local workspace.
 
-## Purpose
-Offline-first iPad stage-management tool. Peter and the Starcatcher remains the bundled starter production, but the app can now be reused for other productions.
+## Main workflow
 
-## Core workflow
-- **Tonight**: company check-in plus readiness for every act/section.
-- **Presets**: each act has a target preset. Act 1 is the preshow preset; Act 2 and later are the required setup/changeover state before that act. This replaces the old hard-coded Intermission page.
+- **Tonight**: active production readiness, attendance summary, act preset progress, shared-asset warnings.
+- **Presets**: one target-state checklist per act/section. Act II is the Act I -> Act II changeover target, Act III is the Act II -> Act III target, etc.
 - **Run**: searchable prop/scenic movement track.
-- **Check-in**: nightly actor and stage-crew attendance.
-- **Manage**: production, acts, locations, presets, people, movements, props, photos, and backups.
+- **Check-in**: nightly cast and stage-crew attendance.
+- **Shows**: switch between overlapping productions or create another production.
+- **Manage**: production setup, people, locations, presets, run track, props, shared inventory, photos, import/export.
 
-## New in v0.4
-- Added **Manage > Locations**. Locations can be added, renamed, reordered, and deleted when unused. Renaming cascades to preset records and photo assignments.
-- Preset editing now selects from managed locations rather than requiring free-text location entry.
-- Added **Manage > Production** with editable production details and arbitrary acts/sections.
-- Acts can be added, renamed, reordered, or removed. One-act, two-act, and multi-act shows are supported.
-- Removed the special Intermission model. Every act after the first uses its preset as the changeover/setup checklist from the previous act.
-- Added **Start new production**. A full backup of the current production downloads first, then a clean production workspace is created.
-- Data/full-backup filenames use the current production name.
-- Import supports both v0.4 generic backups and earlier Starcatcher v0.3 backups.
-- App updates no longer merge Starcatcher seed data into a different locally-created production.
+## Identity model
 
-## Peter and the Starcatcher source hierarchy
-1. `PETER & THE STARCATCHER PRESETS.docx` — authoritative preset/changeover state.
-2. `PETER & THE STARCATCHER PROPS.docx` — authoritative backstage prop inventory.
-3. `STARCATCHER PROPS(2).xlsx` — movement/responsibility track.
-4. Supplied photos — visual verification and editable reference images.
+Every created record uses a permanent UUID. IDs are not regenerated when records are renamed, moved, exported, imported, or reassigned.
 
-## Install on iPad
-Publish this folder to an HTTPS static host such as GitHub Pages. Open it once in Safari and choose Share > Add to Home Screen. The service worker caches the application and bundled Starcatcher reference images for offline use.
+- A **production prop UUID** identifies that prop entry inside a production.
+- A **shared asset UUID** identifies the actual reusable physical item across productions.
+- Link a production prop to a shared asset only when it really is the same physical object.
+- Bulk assets (for example 12 matching umbrellas) use one shared asset UUID plus a quantity.
 
-## Using another production
-Go to **Manage > Production > Start new production**. The current production downloads as a full backup first. Add the show's acts/sections, locations, people, props, presets, run movements, and reference photos.
+Imports merge records by UUID, not by display name.
 
-## Sharing without a server
-- **Export data**: editable production data only.
-- **Export full backup**: production data, nightly checks, and locally uploaded/replaced photos.
-- **Import + merge**: for updates to the same production.
-- **Import + replace**: to restore/switch to another production.
+## Shared inventory and conflicts
+
+1. Manage -> Inventory -> Add shared asset.
+2. Choose **Unique physical item** or **Bulk / quantity pool**.
+3. Manage -> Props -> edit a production prop and link it to the shared asset.
+4. Set the reservation quantity/date range.
+5. If two productions exceed availability during overlapping dates, the app flags the conflict on Tonight, Shows, Props and Inventory.
+
+## Multiple productions
+
+Shows -> + Production creates another show without removing the current one. Each production has its own acts, locations, people, presets, run track, photos, attendance, and production props. Shared people and shared inventory live at the workspace level.
+
+## Local storage and transfer
+
+The app stores workspace data in IndexedDB. Manage -> Backup supports:
+
+- Export one production
+- Export one production with locally replaced/uploaded photos
+- Import/merge a production by UUID
+- Export the entire workspace
+- Merge or replace an entire workspace
+
+Bundled preset photos stay in the app package; locally replaced or uploaded photos can be included in full backups.
+
+## Upgrade from v0.4
+
+v0.5 reads the existing v0.4 local production and migrates its records to permanent UUIDs. The bundled Peter and the Starcatcher records use deterministic UUIDs so the same starter records identify consistently across devices.
+
+## Deployment
+
+Upload the contents of this folder to the root of a GitHub Pages repository. `index.html` must be at the published root. The service worker cache name is versioned for v0.5.0 so the old v0.4 cache is replaced after the new service worker activates.
