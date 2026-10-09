@@ -1,4 +1,4 @@
-# Stage Manager Workspace v0.7.0
+# Stage Manager Workspace v0.7.1
 
 Multi-production stage-management PWA with Supabase relational sync and IndexedDB offline cache.
 
@@ -32,3 +32,7 @@ IndexedDB remains the immediate working copy. If the device is offline, edits re
 ## Security
 
 The browser contains only the Supabase project URL and publishable key. Production data tables use Row Level Security and require an authenticated workspace member. Never place a Supabase secret/service-role key in this PWA.
+
+
+## v0.7.1 cache fix
+Application shell files now use network-first service-worker handling and versioned script/style URLs so GitHub Pages updates are not held behind an old cached release.

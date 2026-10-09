@@ -1,4 +1,4 @@
-const APP_VERSION = '0.7.0';
+const APP_VERSION = '0.7.1';
 const DB_NAME = 'starcatcher-sm';
 const DB_VERSION = 3;
 const WORKSPACE_KEY = 'workspace-v5';

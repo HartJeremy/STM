@@ -1,5 +1,67 @@
-const CACHE='stage-manager-0.7.0-2026-10-09';
-const ASSETS=["./", "./index.html", "./styles.css", "./app.js", "./supabase-config.js", "./cloud-sync.js", "./manifest.webmanifest", "./data/seed-workspace.json", "./icons/icon-192.png", "./icons/icon-512.png", "./images/act1/act1-01.jpg", "./images/act1/act1-02.jpg", "./images/act1/act1-03.jpg", "./images/act1/act1-04.jpg", "./images/act1/act1-05.jpg", "./images/act1/act1-06.jpg", "./images/act1/act1-07.jpg", "./images/act1/act1-08.jpg", "./images/act1/act1-09.jpg", "./images/act1/act1-10.jpg", "./images/act1/act1-11.jpg", "./images/act1/act1-12.jpg", "./images/act1/act1-13.jpg", "./images/act1/act1-14.jpg", "./images/act1/act1-15.jpg", "./images/act1/act1-16.jpg", "./images/act1/act1-17.jpg", "./images/act1/act1-18.jpg", "./images/act1/act1-19.jpg", "./images/act1/act1-20.jpg", "./images/act1/act1-21.jpg", "./images/act1/act1-22.jpg", "./images/act1/act1-23.jpg", "./images/act1/act1-24.jpg", "./images/act1/act1-25.jpg", "./images/act2/act2-01.jpg", "./images/act2/act2-02.jpg", "./images/act2/act2-03.jpg", "./images/act2/act2-04.jpg", "./images/act2/act2-05.jpg", "./images/act2/act2-06.jpg", "./images/act2/act2-07.jpg", "./images/act2/act2-08.jpg", "./images/act2/act2-09.jpg", "./images/act2/act2-10.jpg"];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{const copy=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return resp;}).catch(()=>caches.match('./index.html'))))});
+const CACHE = 'stage-manager-0.7.1-2026-10-09';
+const CORE = [
+  './',
+  './index.html',
+  './styles.css?v=0.7.1',
+  './app.js?v=0.7.1',
+  './supabase-config.js?v=0.7.1',
+  './cloud-sync.js?v=0.7.1',
+  './manifest.webmanifest',
+  './data/seed-workspace.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => cache.addAll(CORE))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
+});
+
+function isAppShell(request) {
+  const url = new URL(request.url);
+  if (request.mode === 'navigate') return true;
+  return /\/(index\.html|app\.js|cloud-sync\.js|supabase-config\.js|styles\.css)$/.test(url.pathname);
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    if (response && response.ok) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    const cached = await caches.match(request);
+    if (cached) return cached;
+    if (request.mode === 'navigate') return caches.match('./index.html');
+    throw error;
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response && response.ok) {
+    const cache = await caches.open(CACHE);
+    cache.put(request, response.clone());
+  }
+  return response;
+}
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(isAppShell(event.request) ? networkFirst(event.request) : cacheFirst(event.request));
+});
