@@ -19,3 +19,8 @@ v0.6.0 intentionally keeps IndexedDB as the operational source of truth while th
 ## Runtime files
 
 The deployment no longer includes the original Starcatcher Word/Excel source documents. The built-in production seed is `data/seed-workspace.json`.
+
+## Deployment verification for v0.6.2
+
+After deploying, the top bar must show `v0.6.2` and Manage must include a `Database` tab.
+If either is missing, the browser/service worker is still serving an older build or the wrong files were deployed.
