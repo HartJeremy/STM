@@ -1,11 +1,11 @@
-const CACHE = 'stage-manager-0.7.1-2026-10-09';
+const CACHE = 'stage-manager-0.7.2-2026-10-09';
 const CORE = [
   './',
   './index.html',
-  './styles.css?v=0.7.1',
-  './app.js?v=0.7.1',
-  './supabase-config.js?v=0.7.1',
-  './cloud-sync.js?v=0.7.1',
+  './styles.css?v=0.7.2',
+  './app.js?v=0.7.2',
+  './supabase-config.js?v=0.7.2',
+  './cloud-sync.js?v=0.7.2',
   './manifest.webmanifest',
   './data/seed-workspace.json',
   './icons/icon-192.png',
