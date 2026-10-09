@@ -1,4 +1,4 @@
-const APP_VERSION = '0.6.2';
+const APP_VERSION = '0.6.0';
 const DB_NAME = 'starcatcher-sm';
 const DB_VERSION = 3;
 const WORKSPACE_KEY = 'workspace-v5';
@@ -21,11 +21,6 @@ let deferredPrompt = null;
 let imageUrlCache = new Map();
 let pendingImageAction = null;
 let pendingPhotoPicker = null;
-
-const TIMER_STORAGE_KEY = 'show-call-timer-v1';
-let showTimer = loadShowTimer();
-let showTimerTick = null;
-let timerAudioContext = null;
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -71,10 +66,6 @@ function locationName(id,fallback=''){ return locationById(id)?.name || fallback
 function presetLocationId(row){ return row?.locationId || locationIdByName(row?.area) || ''; }
 function productionPropById(id){ return (showData?.props||[]).find(x=>x.id===id) || null; }
 function productionPropName(id,fallback=''){ return productionPropById(id)?.name || fallback || 'Unnamed prop'; }
-function propGroupsFor(propId){return (showData?.propGroups||[]).filter(g=>g.propId===propId);}
-function propGroupById(id){return (showData?.propGroups||[]).find(g=>g.id===id)||null;}
-function propInstanceById(prop,id){return (prop?.instances||[]).find(x=>x.id===id)||null;}
-function propTargetLabel(m){const p=productionPropById(m.propId);if(!p)return '';if(m.propTargetType==='instance'){const i=propInstanceById(p,m.propTargetId);return i?`${p.name} ${i.label}`:p.name;}if(m.propTargetType==='group'){const g=propGroupById(m.propTargetId);return g?`${p.name} · ${g.name}`:p.name;}return p.quantity>1?`${p.name} ×${p.quantity}`:p.name;}
 function productionById(id){ return (workspaceData?.productions||[]).find(p=>p.production?.id===id) || null; }
 function globalPersonById(id){ return (workspaceData?.people||[]).find(p=>p.id===id) || null; }
 function inventoryById(id){ return (workspaceData?.inventory||[]).find(a=>a.id===id) || null; }
@@ -87,22 +78,19 @@ function ensureShowStructure(data) {
   data.production.id ||= newUUID();
   data.production.title ||= 'Untitled Production'; data.production.company ||= '';
   data.production.startDate ||= ''; data.production.endDate ||= ''; data.production.status ||= 'active';
-  for(const k of ['people','props','movements','presets','setPieces','blocking','propGroups']) if(!Array.isArray(data[k])) data[k]=[];
+  for(const k of ['people','props','movements','presets']) if(!Array.isArray(data[k])) data[k]=[];
   if(!data.images || typeof data.images!=='object') data.images={act1:[],act2:[],custom:[]};
   data.images.act1 ||= []; data.images.act2 ||= []; data.images.custom ||= [];
   if(!data.areaPhotos || typeof data.areaPhotos!=='object' || Array.isArray(data.areaPhotos)) data.areaPhotos={};
   if(!data.attendance || typeof data.attendance!=='object' || Array.isArray(data.attendance)) data.attendance={};
   if(!data.checks || typeof data.checks!=='object' || Array.isArray(data.checks)) data.checks={};
-  data.settings ||= {}; data.settings.attendanceStatuses=['waiting','here','late','missing','excused','notcalled']; if(!Array.isArray(data.settings.stageMarks)) data.settings.stageMarks=['1','2','3','4','5','6','7'];
+  data.settings ||= {}; data.settings.attendanceStatuses=['waiting','here','late','missing','excused','notcalled'];
   if(!Array.isArray(data.acts) || !data.acts.length) data.acts=[{id:newUUID(),name:'Act I',order:1,notes:'Preshow preset',updatedAt:now()}];
   if(!Array.isArray(data.locations) || !data.locations.length) data.locations=['Stage Left','Stage Right','Center Stage','Onstage','Backstage'].map((name,i)=>({id:newUUID(),name,order:i+1,active:true,updatedAt:now()}));
   for(const a of data.acts) a.id ||= newUUID();
   for(const l of data.locations) l.id ||= newUUID();
-  for(const p of data.props) { p.id ||= newUUID(); if(p.assetId===undefined)p.assetId=null; p.quantity=Math.max(1,Number(p.quantity||1)); if(!Array.isArray(p.instances))p.instances=[]; while(p.instances.length<p.quantity)p.instances.push({id:newUUID(),label:`#${p.instances.length+1}`}); if(p.instances.length>p.quantity)p.instances=p.instances.slice(0,p.quantity); p.instances.forEach((it,i)=>{it.id ||= newUUID(); it.label ||= `#${i+1}`;}); }
-  for(const m of data.movements) { m.id ||= newUUID(); if(!Array.isArray(m.personIds)) m.personIds=[]; m.itemType ||= 'prop'; m.propTargetType ||= 'all'; m.propTargetId ||= ''; }
-  for(const g of data.propGroups) { g.id ||= newUUID(); if(!Array.isArray(g.instanceIds))g.instanceIds=[]; }
-  for(const sp of data.setPieces) sp.id ||= newUUID();
-  for(const b of data.blocking) { b.id ||= newUUID(); if(!Array.isArray(b.personIds)) b.personIds=[]; }
+  for(const p of data.props) { p.id ||= newUUID(); if(p.assetId===undefined)p.assetId=null; }
+  for(const m of data.movements) m.id ||= newUUID();
   for(const p of data.presets) { p.id ||= newUUID(); p.locationId ||= data.locations.find(l=>l.name===p.area)?.id || ''; }
   for(const p of data.people) p.id ||= newUUID();
   for(const arr of Object.values(data.images)) for(const im of arr) im.id ||= newUUID();
@@ -111,7 +99,7 @@ function ensureShowStructure(data) {
 
 function blankProduction(title,company,firstActName='Act I') {
   const pid=newUUID(), actId=newUUID();
-  return ensureShowStructure({schemaVersion:5,appVersion:APP_VERSION,imageBundleVersion:'custom',production:{id:pid,title:title||'Untitled Production',company:company||'',startDate:'',endDate:'',status:'active',updatedAt:now(),dataAuthority:'Locally created production'},acts:[{id:actId,name:firstActName||'Act I',order:1,notes:'Preshow preset',updatedAt:now()}],locations:['Stage Left','Stage Right','Center Stage','Onstage','Backstage'].map((name,i)=>({id:newUUID(),name,order:i+1,active:true,updatedAt:now()})),people:[],props:[],movements:[],presets:[],setPieces:[],blocking:[],propGroups:[],images:{act1:[],act2:[],custom:[]},areaPhotos:{},attendance:{},checks:{},settings:{attendanceStatuses:['waiting','here','late','missing','excused','notcalled']}});
+  return ensureShowStructure({schemaVersion:5,appVersion:APP_VERSION,imageBundleVersion:'custom',production:{id:pid,title:title||'Untitled Production',company:company||'',startDate:'',endDate:'',status:'active',updatedAt:now(),dataAuthority:'Locally created production'},acts:[{id:actId,name:firstActName||'Act I',order:1,notes:'Preshow preset',updatedAt:now()}],locations:['Stage Left','Stage Right','Center Stage','Onstage','Backstage'].map((name,i)=>({id:newUUID(),name,order:i+1,active:true,updatedAt:now()})),people:[],props:[],movements:[],presets:[],images:{act1:[],act2:[],custom:[]},areaPhotos:{},attendance:{},checks:{},settings:{attendanceStatuses:['waiting','here','late','missing','excused','notcalled']}});
 }
 
 function openDB() {
@@ -256,143 +244,6 @@ function mergeImageMeta(a = {}, b = {}) {
   };
 }
 
-function normalizePropName(value){
-  return String(value||'').trim().toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ');
-}
-function propIdentityName(value){return normalizePropName(value).replace(/^\d+\s+/, '').replace(/\s*\(1 extra\)\s*$/,'');}
-
-
-function syncAuthoritativePropsFromSeed(){
-  const seedProd=starterWorkspace?.productions?.find(p=>p.production?.title===showData?.production?.title) || starterWorkspace?.productions?.[0];
-  if(!showData||!seedProd||showData.settings?.canonicalPropsRevision>=3)return false;
-  const localByName=new Map((showData.props||[]).map(p=>[`${propIdentityName(p.name)}|${p.startAct||''}|${p.startLocation||''}`,p]));
-  const idMap=new Map();
-  const canonical=(seedProd.props||[]).map(seedProp=>{
-    const local=(showData.props||[]).find(p=>p.id===seedProp.id) || localByName.get(`${propIdentityName(seedProp.name)}|${seedProp.startAct||''}|${seedProp.startLocation||''}`);
-    if(local?.id)idMap.set(local.id,seedProp.id);
-    return {
-      ...clone(seedProp),
-      ready:local?.ready ?? seedProp.ready ?? false,
-      review:local?.review ?? seedProp.review ?? false,
-      notes:local?.notes ?? seedProp.notes ?? '',
-      assetId:local?.assetId ?? seedProp.assetId ?? null,
-      quantity:seedProp.quantity ?? local?.quantity ?? 1,
-      instances:local?.instances || seedProp.instances || [],
-      updatedAt:now()
-    };
-  });
-  const canonicalByName=new Map(canonical.map(p=>[`${propIdentityName(p.name)}|${p.startAct||''}|${p.startLocation||''}`,p]));
-  for(const row of showData.movements||[]){
-    const mapped=idMap.get(row.propId) || [...canonicalByName.values()].find(p=>propIdentityName(p.name)===propIdentityName(row.propName))?.id;
-    if(mapped)row.propId=mapped;
-  }
-  for(const row of showData.presets||[]){
-    const mapped=idMap.get(row.propId) || [...canonicalByName.values()].find(p=>propIdentityName(p.name)===propIdentityName(row.item))?.id;
-    if(mapped)row.propId=mapped;
-    else if(row.propId && !canonical.some(p=>p.id===row.propId))row.propId='';
-  }
-  showData.props=canonical;
-  for(const row of showData.movements||[]){
-    const prop=canonical.find(p=>p.id===row.propId);
-    if(prop)row.propName=prop.name;
-  }
-  showData.settings ||= {};
-  showData.settings.canonicalPropsRevision=3;
-  showData.settings.canonicalPropsAuthority='Backstage Props List - October 2026';
-  showData.updatedAt=now();
-  return true;
-}
-
-
-function loadShowTimer(){
-  try{
-    const raw=localStorage.getItem(TIMER_STORAGE_KEY);
-    const parsed=raw?JSON.parse(raw):null;
-    if(parsed && typeof parsed==='object') return {...{durationSec:0,endAt:0,remainingSec:0,running:false,fiveCalled:false,placesCalled:false,lastCall:''},...parsed};
-  }catch(e){}
-  return {durationSec:0,endAt:0,remainingSec:0,running:false,fiveCalled:false,placesCalled:false,lastCall:''};
-}
-function saveShowTimer(){ try{localStorage.setItem(TIMER_STORAGE_KEY,JSON.stringify(showTimer));}catch(e){} }
-function timerRemainingSec(){
-  if(showTimer.running && showTimer.endAt) return Math.max(0,Math.ceil((showTimer.endAt-Date.now())/1000));
-  return Math.max(0,Number(showTimer.remainingSec||0));
-}
-function formatTimer(sec){sec=Math.max(0,Math.floor(sec));return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
-function ensureTimerLoop(){
-  if(showTimerTick) return;
-  showTimerTick=setInterval(tickShowTimer,250);
-}
-function stopTimerLoop(){if(showTimerTick){clearInterval(showTimerTick);showTimerTick=null;}}
-function requestTimerNotifications(){
-  if(!('Notification' in window) || Notification.permission!=='default') return;
-  Notification.requestPermission().catch(()=>{});
-}
-function beepTimer(kind){
-  try{
-    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-    timerAudioContext ||= new AC(); if(timerAudioContext.state==='suspended')timerAudioContext.resume();
-    const osc=timerAudioContext.createOscillator(),gain=timerAudioContext.createGain(),t=timerAudioContext.currentTime;
-    osc.type='sine';osc.frequency.value=kind==='places'?880:660;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.18,t+.02);gain.gain.exponentialRampToValueAtTime(.0001,t+.45);osc.connect(gain);gain.connect(timerAudioContext.destination);osc.start(t);osc.stop(t+.48);
-  }catch(e){}
-}
-function showTimerCall(kind){
-  const title=kind==='places'?'PLACES':'5 MINUTES TO PLACES';
-  const body=kind==='places'?'Places.':'Five minutes to places.';
-  showTimer.lastCall=title; saveShowTimer(); beepTimer(kind);
-  if(navigator.vibrate) navigator.vibrate(kind==='places'?[250,100,250]:[180]);
-  try{if('Notification' in window && Notification.permission==='granted')new Notification(title,{body,tag:`stage-manager-${kind}`,renotify:true});}catch(e){}
-  if(currentView==='timer') updateTimerDisplay();
-}
-function tickShowTimer(){
-  if(!showTimer.running){stopTimerLoop();return;}
-  const remaining=timerRemainingSec(); showTimer.remainingSec=remaining;
-  if(!showTimer.fiveCalled && remaining>0 && remaining<=300 && showTimer.durationSec>=300){showTimer.fiveCalled=true;showTimerCall('five');}
-  if(remaining<=0){showTimer.running=false;showTimer.remainingSec=0;if(!showTimer.placesCalled){showTimer.placesCalled=true;showTimerCall('places');}saveShowTimer();stopTimerLoop();}
-  else saveShowTimer();
-  if(currentView==='timer') updateTimerDisplay();
-  updateTimerButton();
-}
-function startShowTimer(minutes){
-  const seconds=Math.max(1,Math.round(Number(minutes)*60));
-  showTimer={durationSec:seconds,endAt:Date.now()+seconds*1000,remainingSec:seconds,running:true,fiveCalled:false,placesCalled:false,lastCall:''};
-  saveShowTimer();requestTimerNotifications();ensureTimerLoop();
-  if(seconds===300){showTimer.fiveCalled=true;showTimerCall('five');}
-  updateTimerDisplay();updateTimerButton();
-}
-function pauseShowTimer(){
-  if(!showTimer.running)return; showTimer.remainingSec=timerRemainingSec();showTimer.running=false;showTimer.endAt=0;saveShowTimer();stopTimerLoop();updateTimerDisplay();updateTimerButton();
-}
-function resumeShowTimer(){
-  if(showTimer.running||!showTimer.remainingSec)return;showTimer.running=true;showTimer.endAt=Date.now()+showTimer.remainingSec*1000;saveShowTimer();ensureTimerLoop();updateTimerDisplay();updateTimerButton();
-}
-function cancelShowTimer(){
-  showTimer={durationSec:0,endAt:0,remainingSec:0,running:false,fiveCalled:false,placesCalled:false,lastCall:''};saveShowTimer();stopTimerLoop();updateTimerDisplay();updateTimerButton();
-}
-function updateTimerButton(){
-  const btn=$('#timerBtn');if(!btn)return;const remaining=timerRemainingSec();btn.textContent=(showTimer.running||remaining)?`⏱ ${formatTimer(remaining)}`:'⏱ Timer';btn.classList.toggle('timer-active',showTimer.running);
-}
-function timerPermissionText(){
-  if(!('Notification' in window))return 'System notifications are not supported here. In-app sound and vibration will still be used when available.';
-  if(Notification.permission==='granted')return 'System notifications are enabled.';
-  if(Notification.permission==='denied')return 'System notifications are blocked. In-app sound and vibration will still be used when available.';
-  return 'Starting a timer will ask for notification permission so calls can appear outside the app when supported.';
-}
-function renderTimer(){
-  setPageTitle('Show Timer');
-  const remaining=timerRemainingSec(),active=showTimer.running||remaining>0;
-  $('#view').innerHTML=`<section class="timer-panel"><div class="eyebrow">Show call countdown</div><div id="timerClock" class="timer-clock">${formatTimer(remaining)}</div><div id="timerStatus" class="timer-status">${showTimer.running?'Running':remaining>0?'Paused':'Ready'}</div><div id="timerCall" class="timer-call ${showTimer.lastCall?'show':''}">${esc(showTimer.lastCall||'')}</div><div class="timer-quick"><button class="timer-start" data-timer-min="5">5 min</button><button class="timer-start" data-timer-min="10">10 min</button><button class="timer-start" data-timer-min="15">15 min</button></div><div class="timer-actions"><button id="pauseTimer" class="btn secondary" ${!showTimer.running?'hidden':''}>Pause</button><button id="resumeTimer" class="btn primary" ${showTimer.running||!remaining?'hidden':''}>Resume</button><button id="cancelTimer" class="btn danger" ${!active?'hidden':''}>Cancel</button></div><div class="timer-sequence"><div><strong>5:00 remaining</strong><span>5 minutes to places</span></div><div><strong>0:00</strong><span>Places</span></div></div><p id="timerPermission" class="filemeta">${esc(timerPermissionText())}</p></section>`;
-  $$('[data-timer-min]').forEach(b=>b.addEventListener('click',()=>startShowTimer(Number(b.dataset.timerMin))));
-  $('#pauseTimer')?.addEventListener('click',pauseShowTimer);$('#resumeTimer')?.addEventListener('click',resumeShowTimer);$('#cancelTimer')?.addEventListener('click',cancelShowTimer);
-  updateTimerDisplay();
-}
-function updateTimerDisplay(){
-  const clock=$('#timerClock');if(!clock)return;const remaining=timerRemainingSec();clock.textContent=formatTimer(remaining);
-  const status=$('#timerStatus');if(status)status.textContent=showTimer.running?'Running':remaining>0?'Paused':showTimer.placesCalled?'Complete':'Ready';
-  const call=$('#timerCall');if(call){call.textContent=showTimer.lastCall||'';call.classList.toggle('show',!!showTimer.lastCall);call.classList.toggle('places',showTimer.lastCall==='PLACES');}
-  const pause=$('#pauseTimer'),resume=$('#resumeTimer'),cancel=$('#cancelTimer');if(pause)pause.hidden=!showTimer.running;if(resume)resume.hidden=showTimer.running||!remaining;if(cancel)cancel.hidden=!(showTimer.running||remaining);
-  const perm=$('#timerPermission');if(perm)perm.textContent=timerPermissionText();
-}
-
 async function init() {
   db=await openDB(); starterWorkspace=ensureWorkspaceStructure(await (await fetch('data/seed-workspace.json',{cache:'no-store'})).json());
   workspaceData=await getKV(WORKSPACE_KEY);
@@ -402,19 +253,12 @@ async function init() {
     await setKV(WORKSPACE_KEY,workspaceData);
   } else workspaceData=ensureWorkspaceStructure(workspaceData);
   setActiveRefs(); if(!showData){workspaceData=clone(starterWorkspace);setActiveRefs();await setKV(WORKSPACE_KEY,workspaceData);}
-  if(syncAuthoritativePropsFromSeed())await setKV(WORKSPACE_KEY,workspaceData);
   $('#productionTitle').textContent=showData.production?.title||'Stage Manager'; bindShell(); route('tonight'); registerSW();
 }
 
 function bindShell() {
   $$('.navbtn').forEach(btn => btn.addEventListener('click', () => route(btn.dataset.view)));
-  $('#timerBtn').addEventListener('click',()=>route('timer'));
-  updateTimerButton();
-  if(showTimer.running){ensureTimerLoop();tickShowTimer();}
   $('#closePhoto').addEventListener('click', () => $('#photoDialog').close());
-  $('#closeDetail').addEventListener('click',()=>$('#detailDialog').close());
-  $('#closeBlocking').addEventListener('click',()=>$('#blockingDialog').close()); $('#cancelBlocking').addEventListener('click',()=>$('#blockingDialog').close()); $('#saveBlocking').addEventListener('click',()=>saveBlockingForm().catch(e=>alert(e.message||e)));
-  $('#closeMovement').addEventListener('click',()=>$('#movementDialog').close()); $('#cancelMovement').addEventListener('click',()=>$('#movementDialog').close()); $('#saveMovement').addEventListener('click',()=>saveLinkedMoveForm().catch(e=>alert(e.message||e))); $('#movementType').addEventListener('change',toggleMovementItemFields); $('#movementProp').addEventListener('change',()=>updateMovementPropTargets());
   $('#photoDialog').addEventListener('click', e => { if (e.target === $('#photoDialog')) $('#photoDialog').close(); });
   $('#closeForm').addEventListener('click', () => $('#formDialog').close());
   $('#cancelEdit').addEventListener('click', () => $('#formDialog').close());
@@ -449,8 +293,7 @@ function setPageTitle(title) {
 
 function route(view) {
   currentView=view; $$('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
-  if(view==='tonight')renderTonight(); else if(view==='timer')renderTimer(); else if(view==='presets')renderPresets(); else if(view==='run')renderRun(); else if(view==='checkin')renderCheckin(); else if(view==='shows')renderShows(); else if(view==='manage')renderManage(); else renderTonight();
-  updateTimerButton();
+  if(view==='tonight')renderTonight(); else if(view==='presets')renderPresets(); else if(view==='run')renderRun(); else if(view==='checkin')renderCheckin(); else if(view==='shows')renderShows(); else if(view==='manage')renderManage(); else renderTonight();
   window.scrollTo({top:0,behavior:'auto'});
 }
 
@@ -672,7 +515,25 @@ function renderManageInventory(){const conflicts=workspaceConflicts(),assets=(wo
 function openAssetForm(asset={}){openForm(asset.id?'Edit shared asset':'Add shared asset',[['name','Asset name','text',asset.name||''],['category','Category','select',asset.category||'prop',[['prop','Prop'],['scenic','Set / scenic'],['furniture','Furniture'],['costume','Costume'],['equipment','Equipment'],['other','Other']]],['trackingMode','Tracking','select',asset.trackingMode||'unique',[['unique','Unique physical item'],['bulk','Bulk / quantity pool']]],['quantity','Total quantity','number',String(asset.quantity||1)],['notes','Notes / identifying marks','textarea',asset.notes||''],['active','Active inventory','checkbox',asset.active!==false]],async vals=>{if(!vals.name.trim())throw new Error('Asset name is required.');const mode=vals.trackingMode,qty=mode==='unique'?1:Math.max(1,Number(vals.quantity||1)),data={name:vals.name.trim(),category:vals.category,trackingMode:mode,quantity:qty,notes:vals.notes,active:vals.active,updatedAt:now()};if(asset.id)Object.assign(asset,data);else workspaceData.inventory.push({id:newUUID(),...data});await saveWorkspace();renderManage();});}
 async function deleteAsset(id){const asset=inventoryById(id);if(!asset)return;const rs=(workspaceData.reservations||[]).filter(r=>r.assetId===id);if(rs.length){alert(`${asset.name} has ${rs.length} production reservation(s). Unlink those production props first.`);return;}if(!confirm(`Delete shared asset ${asset.name}?`))return;workspaceData.inventory=workspaceData.inventory.filter(a=>a.id!==id);await saveWorkspace();renderManage();}
 
-function renderManage(){setPageTitle('Manage');const tabs=[['production','Production'],['people','People'],['locations','Locations'],['presets','Presets'],['run','Run'],['props','Props'],['setpieces','Set Pieces'],['blocking','Blocking'],['inventory','Inventory'],['images','Images'],['backup','Backup']];$('#view').innerHTML=`<div class="manage-tabs">${tabs.map(([k,l])=>`<button class="manage-tab ${manageTab===k?'active':''}" data-manage-tab="${k}">${l}</button>`).join('')}</div><div id="manageBody"></div>`;$$('[data-manage-tab]').forEach(b=>b.addEventListener('click',()=>{manageTab=b.dataset.manageTab;renderManage();}));if(manageTab==='production')renderManageProduction();else if(manageTab==='people')renderManagePeople();else if(manageTab==='locations')renderManageLocations();else if(manageTab==='presets')renderManagePresets();else if(manageTab==='run')renderManageRun();else if(manageTab==='props')renderManageProps();else if(manageTab==='setpieces')renderManageSetPieces();else if(manageTab==='blocking')renderManageBlocking();else if(manageTab==='inventory')renderManageInventory();else if(manageTab==='images')renderManageImages();else renderBackup();}
+async function getSupabaseStatus(){
+  const client=window.supabaseClient;
+  if(!client)return {ok:false,message:'Supabase client is not available. Check your connection and configuration.'};
+  try{
+    const {data,error}=await client.from('app_health').select('message,created_at').limit(1);
+    if(error)throw error;
+    const {data:sessionData}=await client.auth.getSession();
+    return {ok:true,message:data?.[0]?.message||'Supabase connected.',signedIn:!!sessionData?.session,email:sessionData?.session?.user?.email||''};
+  }catch(err){return {ok:false,message:err?.message||String(err)};}
+}
+
+function renderManageDatabase(){
+  const cfg=window.STM_SUPABASE||{};
+  manageBody(`<section class="manage-section"><div class="manage-section-head"><strong>Supabase database</strong><span id="dbStatusTag" class="tag review">checking</span></div><div style="padding:14px"><div class="filemeta"><strong>Project</strong><br>${esc(cfg.url||'Not configured')}</div><div id="dbStatus" class="notice" style="margin-top:12px"><strong>Checking connection…</strong></div><div class="toolbar" style="margin-top:12px"><button id="testDatabase" class="btn secondary compact">Test connection</button></div><div class="smalltext muted" style="margin-top:12px">The app is connected to the Supabase project configuration, but v0.6 still treats IndexedDB as the operational source while the relational migration is being verified. Run <code>supabase-schema.sql</code> once in the Supabase SQL Editor before migrating production data.</div></div></section>`);
+  const paint=async()=>{const box=$('#dbStatus'),tag=$('#dbStatusTag');if(!box||!tag)return;box.innerHTML='<strong>Checking connection…</strong>';tag.textContent='checking';tag.className='tag review';const st=await getSupabaseStatus();if(st.ok){box.className='notice oknotice';box.innerHTML=`<strong>Database connection successful.</strong><div class="smalltext">${esc(st.message)}${st.signedIn?` · Signed in as ${esc(st.email)}`:' · No user signed in yet.'}</div>`;tag.textContent='connected';tag.className='tag critical';}else{box.className='notice';box.innerHTML=`<strong>Database not ready.</strong><div class="smalltext">${esc(st.message)}</div>`;tag.textContent='setup needed';tag.className='tag review';}};
+  $('#testDatabase').addEventListener('click',paint);paint();
+}
+
+function renderManage(){setPageTitle('Manage');const tabs=[['production','Production'],['people','People'],['locations','Locations'],['presets','Presets'],['run','Run'],['props','Props'],['inventory','Inventory'],['images','Images'],['database','Database'],['backup','Backup']];$('#view').innerHTML=`<div class="manage-tabs">${tabs.map(([k,l])=>`<button class="manage-tab ${manageTab===k?'active':''}" data-manage-tab="${k}">${l}</button>`).join('')}</div><div id="manageBody"></div>`;$$('[data-manage-tab]').forEach(b=>b.addEventListener('click',()=>{manageTab=b.dataset.manageTab;renderManage();}));if(manageTab==='production')renderManageProduction();else if(manageTab==='people')renderManagePeople();else if(manageTab==='locations')renderManageLocations();else if(manageTab==='presets')renderManagePresets();else if(manageTab==='run')renderManageRun();else if(manageTab==='props')renderManageProps();else if(manageTab==='inventory')renderManageInventory();else if(manageTab==='images')renderManageImages();else if(manageTab==='database')renderManageDatabase();else renderBackup();}
 
 function manageBody(html) { $('#manageBody').innerHTML = html; }
 
@@ -699,8 +560,8 @@ async function deleteLocation(id){const loc=showData.locations.find(x=>x.id===id
 function renderManagePeople() {
   const active = (showData.people||[]).slice().sort((a,b)=>(a.group||'').localeCompare(b.group||'') || a.name.localeCompare(b.name));
   const groups = groupBy(active,x=>x.group==='cast'?'Cast':'Stage crew');
-  manageBody(`<div class="toolbar"><button id="addPerson" class="btn primary compact">+ Add person</button></div>${Object.entries(groups).map(([g,rows])=>`<section class="manage-section"><div class="manage-section-head"><strong>${esc(g)}</strong><span class="muted smalltext">${rows.length}</span></div>${rows.map(p=>`<div class="listrow"><div><div class="listrow-title"><button class="linkbtn" data-person-detail="${p.id}">${esc(p.name)}</button></div><div class="listrow-meta">${esc(p.role||'')}${p.active===false?' · inactive':''}</div></div><div class="row-actions"><button class="mini-btn" data-edit-person="${p.id}">Edit</button></div></div>`).join('')}</section>`).join('')}`);
-  $('#addPerson').addEventListener('click',()=>openPersonForm());$$('[data-person-detail]').forEach(b=>b.addEventListener('click',()=>openPersonDetail(b.dataset.personDetail)));
+  manageBody(`<div class="toolbar"><button id="addPerson" class="btn primary compact">+ Add person</button></div>${Object.entries(groups).map(([g,rows])=>`<section class="manage-section"><div class="manage-section-head"><strong>${esc(g)}</strong><span class="muted smalltext">${rows.length}</span></div>${rows.map(p=>`<div class="listrow"><div><div class="listrow-title">${esc(p.name)}</div><div class="listrow-meta">${esc(p.role||'')}${p.active===false?' · inactive':''}</div></div><div class="row-actions"><button class="mini-btn" data-edit-person="${p.id}">Edit</button></div></div>`).join('')}</section>`).join('')}`);
+  $('#addPerson').addEventListener('click',()=>openPersonForm());
   $$('[data-edit-person]').forEach(b=>b.addEventListener('click',()=>openPersonForm(showData.people.find(x=>x.id===b.dataset.editPerson))));
 }
 
@@ -710,41 +571,13 @@ function renderManagePresets(){const acts=sortedActs();manageBody(`<div class="t
 
 function openPresetForm(x={}){const locs=locationOptions();if(!locs.length){alert('Add a location first under Manage → Locations.');manageTab='locations';renderManage();return;}const propOpts=[['','No linked prop'],...(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>[p.id,p.name])];openForm(x.id?'Edit preset item':'Add preset item',[['act','Act / section','select',x.act||sortedActs()[0]?.id||'',actOptions()],['locationId','Location / area','select',presetLocationId(x)||locs[0][0],locs],['propId','Linked production prop','select',x.propId||'',propOpts],['item','Item / required state','text',x.item||''],['kind','Type','text',x.kind||'Preset'],['notes','Notes','textarea',x.notes||''],['critical','Critical','checkbox',!!x.critical]],async vals=>{if(!vals.item.trim()||!vals.locationId)throw new Error('Location and item are required.');const data={...vals,area:locationName(vals.locationId),updatedAt:now()};if(x.id)Object.assign(x,data);else showData.presets.push({id:newUUID(),...data});await saveShow();renderManage();});}
 
-function renderManageRun(){const rows=(showData.movements||[]).slice().sort(movementSort);manageBody(`<div class="toolbar"><button id="addMove" class="btn primary compact">+ Add movement</button></div><section class="manage-section">${rows.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(productionPropName(x.propId,x.propName))}</div><div class="listrow-meta">${esc(actName(x.act))} · Sc ${esc(x.scene||'—')} · p${esc(x.page||'—')} · ${esc(x.person||'unassigned')}</div><div class="smalltext">${esc(x.cue||'')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-move="${x.id}">Edit</button><button class="mini-btn" data-del-move="${x.id}">Delete</button></div></div>`).join('')}</section>`);$('#addMove').addEventListener('click',()=>openLinkedMoveForm());$$('[data-edit-move]').forEach(b=>b.addEventListener('click',()=>openLinkedMoveForm(showData.movements.find(x=>x.id===b.dataset.editMove))));$$('[data-del-move]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this movement?'))return;showData.movements=showData.movements.filter(x=>x.id!==b.dataset.delMove);await saveShow();renderManage();}));}
+function renderManageRun(){const rows=(showData.movements||[]).slice().sort(movementSort);manageBody(`<div class="toolbar"><button id="addMove" class="btn primary compact">+ Add movement</button></div><section class="manage-section">${rows.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(productionPropName(x.propId,x.propName))}</div><div class="listrow-meta">${esc(actName(x.act))} · Sc ${esc(x.scene||'—')} · p${esc(x.page||'—')} · ${esc(x.person||'unassigned')}</div><div class="smalltext">${esc(x.cue||'')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-move="${x.id}">Edit</button><button class="mini-btn" data-del-move="${x.id}">Delete</button></div></div>`).join('')}</section>`);$('#addMove').addEventListener('click',()=>openMoveForm());$$('[data-edit-move]').forEach(b=>b.addEventListener('click',()=>openMoveForm(showData.movements.find(x=>x.id===b.dataset.editMove))));$$('[data-del-move]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Delete this movement?'))return;showData.movements=showData.movements.filter(x=>x.id!==b.dataset.delMove);await saveShow();renderManage();}));}
 
 function openMoveForm(x={}){const props=(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),locs=[['','— Unspecified / free text —'],...locationOptions()];openForm(x.id?'Edit movement':'Add movement',[['propId','Prop','select',x.propId||props[0]?.id||'',props.map(p=>[p.id,p.name])],['act','Act / section','select',x.act||sortedActs()[0]?.id||'',actOptions(true)],['scene','Scene','text',x.scene||''],['page','Page','text',x.page||''],['person','Who','text',x.person||''],['fromLocationId','From location (optional)','select',x.fromLocationId||'',locs],['from','From / instruction','text',x.from||''],['toLocationId','To location (optional)','select',x.toLocationId||'',locs],['to','To / instruction','text',x.to||''],['cue','Cue / instruction','textarea',x.cue||''],['notes','Notes','textarea',x.notes||''],['review','Needs review','checkbox',!!x.review]],async vals=>{const prop=productionPropById(vals.propId);if(!prop)throw new Error('Choose a prop.');const data={...vals,propName:prop.name,from:vals.from||locationName(vals.fromLocationId,''),to:vals.to||locationName(vals.toLocationId,''),updatedAt:now()};if(x.id)Object.assign(x,data);else showData.movements.push({id:newUUID(),order:99999,...data});await saveShow();renderManage();});}
 
-function renderManageProps(){
-  const order={"Act I":1,"Act II":2,"Stage Right":1,"Stage Left":2};
-  const rows=(showData.props||[]).slice().sort((a,b)=>(order[a.startAct]||9)-(order[b.startAct]||9)||(order[a.startLocation]||9)-(order[b.startLocation]||9)||a.name.localeCompare(b.name));
-  const groups=groupBy(rows,x=>`${x.startAct||"Other"}||${x.startLocation||"Unassigned"}`);
-  const sections=Object.entries(groups).map(([key,items])=>{const [act,side]=key.split('||');return `<section class="manage-section"><div class="section-title">${esc(act)} · ${esc(side)} <span class="muted">(${items.length})</span></div>${items.map(x=>{const asset=inventoryById(x.assetId),res=reservationForProp(x.id),conf=asset?reservationHasConflict(res):false;return `<div class="listrow"><div><div class="listrow-title"><button class="linkbtn" data-prop-detail="${x.id}">${esc(x.name)}${x.quantity>1?` <span class="muted">×${x.quantity}</span>`:''}</button></div><div class="listrow-meta">${x.review?'Needs review · ':''}${asset?`Shared: ${esc(asset.name)}${res?` · ${esc(res.startDate||'no start')} → ${esc(res.endDate||'no end')}`:''}${conf?' · CONFLICT':''}`:'Production-only'}${x.notes?` · ${esc(x.notes)}`:''}</div></div><div class="row-actions"><button class="mini-btn" data-edit-prop="${x.id}">Edit</button><button class="mini-btn" data-del-prop="${x.id}">Delete</button></div></div>`;}).join('')}</section>`;}).join('');
-  manageBody(`<div class="toolbar"><button id="addProp" class="btn primary compact">+ Add prop</button><button id="goInventory" class="btn secondary compact">Shared inventory</button></div><div class="notice oknotice"><strong>Master prop list</strong><div class="smalltext">Backstage Props List is the authority. Items are grouped by their starting act and side; presets handle exact stage placement.</div></div>${sections||'<div class="empty">No props yet.</div>'}`);
-  $('#addProp').addEventListener('click',()=>openPropForm());$('#goInventory').addEventListener('click',()=>{manageTab='inventory';renderManage();});$$('[data-prop-detail]').forEach(b=>b.addEventListener('click',()=>openPropDetail(b.dataset.propDetail)));$$('[data-edit-prop]').forEach(b=>b.addEventListener('click',()=>openPropForm(showData.props.find(x=>x.id===b.dataset.editProp))));$$('[data-del-prop]').forEach(b=>b.addEventListener('click',async()=>{const id=b.dataset.delProp;if(!confirm('Delete this production prop? Movement records that reference it will remain.'))return;showData.props=showData.props.filter(x=>x.id!==id);workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===id));await saveShow();renderManage();}));
-}
+function renderManageProps(){const rows=(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));manageBody(`<div class="toolbar"><button id="addProp" class="btn primary compact">+ Add prop</button><button id="goInventory" class="btn secondary compact">Shared inventory</button></div><div class="notice oknotice"><strong>Production props have permanent UUIDs.</strong><div class="smalltext">Link a prop to shared inventory only when it is the same physical reusable item.</div></div><section class="manage-section">${rows.map(x=>{const asset=inventoryById(x.assetId),res=reservationForProp(x.id),conf=asset?reservationHasConflict(res):false;return `<div class="listrow"><div><div class="listrow-title">${esc(x.name)}</div><div class="listrow-meta">${x.review?'Needs review · ':''}${asset?`Shared: ${esc(asset.name)}${res?` · ${esc(res.startDate||'no start')} → ${esc(res.endDate||'no end')}`:''}${conf?' · CONFLICT':''}`:'Production-only'}${x.notes?` · ${esc(x.notes)}`:''}</div></div><div class="row-actions"><button class="mini-btn" data-edit-prop="${x.id}">Edit</button><button class="mini-btn" data-del-prop="${x.id}">Delete</button></div></div>`;}).join('')}</section>`);$('#addProp').addEventListener('click',()=>openPropForm());$('#goInventory').addEventListener('click',()=>{manageTab='inventory';renderManage();});$$('[data-edit-prop]').forEach(b=>b.addEventListener('click',()=>openPropForm(showData.props.find(x=>x.id===b.dataset.editProp))));$$('[data-del-prop]').forEach(b=>b.addEventListener('click',async()=>{const id=b.dataset.delProp;if(!confirm('Delete this production prop? Movement records that reference it will remain.'))return;showData.props=showData.props.filter(x=>x.id!==id);workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===id));await saveShow();renderManage();}));}
 
-function openPropForm(x={}){const res=x.id?reservationForProp(x.id):null,assets=(workspaceData.inventory||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),assetOpts=[['','Not linked to inventory'],...assets.map(a=>[a.id,`${a.name}${a.trackingMode==='bulk'?` (qty ${a.quantity})`:''}`])];openForm(x.id?'Edit prop':'Add prop',[['name','Name','text',x.name||''],['quantity','Quantity','number',String(x.quantity||1)],['startAct','Starting act','select',x.startAct||'', [['','Not set'],['Act I','Act I'],['Act II','Act II']]],['startLocation','Starting side','select',x.startLocation||'', [['','Not set'],['Stage Right','Stage Right'],['Stage Left','Stage Left'],['Onstage','Onstage'],['Backstage','Backstage']]],['notes','Notes','textarea',x.notes||''],['ready','Ready / acquired','checkbox',!!x.ready],['review','Needs review','checkbox',!!x.review],['assetId','Shared inventory asset','select',x.assetId||'',assetOpts],['reserveQty','Quantity reserved','number',String(res?.quantity||1)],['reserveStart','Needed from','date',res?.startDate||showData.production.startDate||''],['reserveEnd','Needed through','date',res?.endDate||showData.production.endDate||'']],async vals=>{if(!vals.name.trim())throw new Error('Prop name is required.');const qty=Math.max(1,Number(vals.quantity||1));if(vals.reserveStart&&vals.reserveEnd&&vals.reserveEnd<vals.reserveStart)throw new Error('Reservation end date cannot be before start date.');let prop=x;if(x.id){Object.assign(prop,{name:vals.name,quantity:qty,startAct:vals.startAct||'',startLocation:vals.startLocation||'',notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()});}else{prop={id:newUUID(),sourcePage:'',sourceRow:'',name:vals.name,quantity:qty,instances:[],startAct:vals.startAct||'',startLocation:vals.startLocation||'',notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()};showData.props.push(prop);}prop.instances ||= [];while(prop.instances.length<qty)prop.instances.push({id:newUUID(),label:`#${prop.instances.length+1}`});if(prop.instances.length>qty){const removed=new Set(prop.instances.slice(qty).map(i=>i.id));prop.instances=prop.instances.slice(0,qty);for(const g of showData.propGroups||[])if(g.propId===prop.id)g.instanceIds=(g.instanceIds||[]).filter(id=>!removed.has(id));for(const m of showData.movements||[])if(m.propId===prop.id&&m.propTargetType==='instance'&&removed.has(m.propTargetId)){m.propTargetType='all';m.propTargetId='';}}for(const m of showData.movements)if(m.propId===prop.id)m.propName=prop.name;workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===prop.id));if(prop.assetId){const asset=inventoryById(prop.assetId),rq=asset?.trackingMode==='unique'?1:Math.max(1,Number(vals.reserveQty||1));workspaceData.reservations.push({id:res?.id||newUUID(),assetId:prop.assetId,productionId:showData.production.id,productionPropId:prop.id,quantity:rq,startDate:vals.reserveStart||'',endDate:vals.reserveEnd||'',notes:'',updatedAt:now()});}await saveShow();renderManage();});}
-
-function openPropDetail(id){const prop=productionPropById(id);if(!prop)return;const uses=(showData.movements||[]).filter(m=>m.itemType!=='set'&&m.propId===id).sort(movementSort);const presets=(showData.presets||[]).filter(p=>p.propId===id),groups=propGroupsFor(id);const inst=(prop.instances||[]);openDetail(`${prop.name}${prop.quantity>1?` ×${prop.quantity}`:''}`,`<div class="detail-meta">Starts: ${esc(prop.startAct||'—')} · ${esc(prop.startLocation||'—')}</div><h3>Physical items</h3><div class="instance-grid">${inst.map(i=>`<span class="tag">${esc(i.label)}</span>`).join('')}</div><div class="toolbar"><button class="mini-btn" id="addPropGroup">+ Group</button></div><h3>Groups</h3>${groups.length?groups.map(g=>{const labels=(g.instanceIds||[]).map(i=>propInstanceById(prop,i)?.label).filter(Boolean).join(', ');return `<div class="detail-row"><strong><button class="linkbtn" data-edit-prop-group="${g.id}">${esc(g.name)}</button></strong><div>${esc(labels||'No instances')}</div></div>`}).join(''):'<div class="empty">No groups yet.</div>'}<h3>Presets</h3>${presets.length?presets.map(p=>detailRow(`${actName(p.act)} · ${locationName(presetLocationId(p),p.area)}`,p.notes||p.item)).join(''):'<div class="empty">No linked presets.</div>'}<h3>Usage / movement</h3>${uses.length?uses.map(m=>detailRow(`${actName(m.act)} · Sc ${m.scene||'—'} · p${m.page||'—'}`,`${propTargetLabel(m)} · ${linkedPersonNames(m)} · ${m.notation||m.cue||''}`)).join(''):'<div class="empty">No linked usage yet.</div>'}`);$('#addPropGroup')?.addEventListener('click',()=>openPropGroupForm(prop));$$('[data-edit-prop-group]', $('#detailBody')).forEach(b=>b.addEventListener('click',()=>openPropGroupForm(prop,propGroupById(b.dataset.editPropGroup))));}
-function openPropGroupForm(prop,g={}){const nums=(g.instanceIds||[]).map(id=>(prop.instances||[]).findIndex(i=>i.id===id)+1).filter(n=>n>0).join(',');$('#detailDialog').close();openForm(g.id?'Edit prop group':'Add prop group',[['name','Group name','text',g.name||''],['instances',`Instance numbers (1-${prop.quantity})`,'text',nums],['notes','Notes','textarea',g.notes||'']],async vals=>{if(!vals.name.trim())throw new Error('Group name is required.');const indexes=[...new Set(vals.instances.split(',').map(x=>Number(x.trim())).filter(n=>Number.isInteger(n)&&n>=1&&n<=prop.quantity))];if(!indexes.length)throw new Error('Enter at least one valid instance number.');const data={propId:prop.id,name:vals.name.trim(),instanceIds:indexes.map(n=>prop.instances[n-1].id),notes:vals.notes||'',updatedAt:now()};if(g.id)Object.assign(g,data);else showData.propGroups.push({id:newUUID(),...data});await saveShow();openPropDetail(prop.id);});}
-
-function openPersonDetail(id){const p=productionPersonById(id);if(!p)return;const moves=(showData.movements||[]).filter(m=>(m.personIds||[]).includes(id)).sort(movementSort);const blocks=(showData.blocking||[]).filter(b=>(b.personIds||[]).includes(id)).sort(movementSort);openDetail(p.name,`<div class="detail-meta">${esc(p.role||'')}</div><h3>Props & set movements</h3>${moves.length?moves.map(m=>detailRow(`${actName(m.act)} · ${m.itemType==='set'?setPieceById(m.setPieceId)?.name:productionPropName(m.propId,m.propName)}`,`${m.notation||m.cue||''} ${m.scene?'· Sc '+m.scene:''}`)).join(''):'<div class="empty">No linked movements.</div>'}<h3>Blocking</h3>${blocks.length?blocks.map(b=>detailRow(`${actName(b.act)} · Sc ${b.scene||'—'} · p${b.page||'—'}`,b.notation||b.notes||'')).join(''):'<div class="empty">No blocking notes.</div>'}`);}
-function openSetPieceDetail(id){const sp=setPieceById(id);if(!sp)return;const uses=(showData.movements||[]).filter(m=>m.itemType==='set'&&m.setPieceId===id).sort(movementSort);openDetail(sp.name,`<div class="detail-meta">Starts: ${esc(sp.startLocation||'—')}</div><h3>Movements</h3>${uses.length?uses.map(m=>detailRow(`${actName(m.act)} · Sc ${m.scene||'—'} · p${m.page||'—'}`,`${linkedPersonNames(m)} · ${m.notation||m.cue||''}`)).join(''):'<div class="empty">No movements yet.</div>'}`);}
-function detailRow(title,body){return `<div class="detail-row"><strong>${esc(title)}</strong><div>${esc(body||'')}</div></div>`;}
-function openDetail(title,html){$('#detailTitle').textContent=title;$('#detailBody').innerHTML=html;$('#detailDialog').showModal();}
-
-function renderManageSetPieces(){const rows=(showData.setPieces||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));manageBody(`<div class="toolbar"><button id="addSetPiece" class="btn primary compact">+ Add set piece</button></div><div class="notice oknotice"><strong>Scenic movement</strong><div class="smalltext">Track furniture, stairs, pallets, rolling units and other scenery separately from props.</div></div><section class="manage-section">${rows.length?rows.map(x=>`<div class="listrow"><div><div class="listrow-title"><button class="linkbtn" data-set-detail="${x.id}">${esc(x.name)}${x.quantity>1?` <span class="muted">×${x.quantity}</span>`:''}</button></div><div class="listrow-meta">Starts ${esc(x.startLocation||'—')}</div></div><div class="row-actions"><button class="mini-btn" data-edit-set="${x.id}">Edit</button></div></div>`).join(''):'<div class="empty">No set pieces yet.</div>'}</section>`);$('#addSetPiece').addEventListener('click',()=>openSetPieceForm());$$('[data-edit-set]').forEach(b=>b.addEventListener('click',()=>openSetPieceForm(setPieceById(b.dataset.editSet))));$$('[data-set-detail]').forEach(b=>b.addEventListener('click',()=>openSetPieceDetail(b.dataset.setDetail)));}
-function openSetPieceForm(x={}){openForm(x.id?'Edit set piece':'Add set piece',[['name','Name','text',x.name||''],['startLocation','Starting position','text',x.startLocation||''],['notes','Notes','textarea',x.notes||'']],async vals=>{if(!vals.name.trim())throw new Error('Name is required.');if(x.id)Object.assign(x,vals,{updatedAt:now()});else showData.setPieces.push({id:newUUID(),...vals,updatedAt:now()});await saveShow();renderManage();});}
-
-function renderManageBlocking(){const rows=(showData.blocking||[]).slice().sort(movementSort);manageBody(`<div class="toolbar"><button id="addBlocking" class="btn primary compact">+ Blocking note</button><button id="stageMarks" class="btn secondary compact">Stage marks: ${esc(stageMarkText())}</button></div><section class="manage-section">${rows.length?rows.map(x=>`<div class="listrow"><div><div class="listrow-title">${esc(linkedPersonNames(x))}</div><div class="listrow-meta">${esc(actName(x.act))} · Sc ${esc(x.scene||'—')} · p${esc(x.page||'—')}</div><div class="smalltext">${esc(x.notation||x.notes||'')}</div></div><button class="mini-btn" data-edit-block="${x.id}">Edit</button></div>`).join(''):'<div class="empty">No blocking notes yet.</div>'}</section>`);$('#addBlocking').addEventListener('click',()=>openBlockingForm());$('#stageMarks').addEventListener('click',openStageMarksForm);$$('[data-edit-block]').forEach(b=>b.addEventListener('click',()=>openBlockingForm(showData.blocking.find(x=>x.id===b.dataset.editBlock))));}
-function openStageMarksForm(){openForm('Stage reference marks',[['marks','Front-of-stage reference numbers / labels','text',stageMarkText()]],async vals=>{showData.settings.stageMarks=vals.marks.split(',').map(x=>x.trim()).filter(Boolean);await saveShow();renderManage();});}
-function openBlockingForm(x={}){const dlg=$('#blockingDialog'), people=$('#blockingPeople');$('#blockingTitle').textContent=x.id?'Edit blocking':'Add blocking';$('#blockingAct').innerHTML=actOptions().map(([v,l])=>`<option value="${esc(v)}" ${v===(x.act||sortedActs()[0]?.id)?'selected':''}>${esc(l)}</option>`).join('');$('#blockingScene').value=x.scene||'';$('#blockingPage').value=x.page||'';$('#blockingNotation').value=x.notation||'';$('#blockingNotes').value=x.notes||'';people.innerHTML=peopleChecksHTML(x.personIds||[]);$('#blockingQuick').innerHTML=quickNotationHTML('blockingNotation');bindNotationButtons($('#blockingQuick'));dlg.dataset.editId=x.id||'';dlg.showModal();}
-async function saveBlockingForm(){const id=$('#blockingDialog').dataset.editId,row=id?showData.blocking.find(x=>x.id===id):null,data={act:$('#blockingAct').value,scene:$('#blockingScene').value,page:$('#blockingPage').value,personIds:selectedPeopleFrom($('#blockingPeople')),notation:$('#blockingNotation').value,notes:$('#blockingNotes').value,updatedAt:now()};if(!data.personIds.length)throw new Error('Link at least one actor/person.');if(row)Object.assign(row,data);else showData.blocking.push({id:newUUID(),order:99999,...data});await saveShow();$('#blockingDialog').close();renderManage();}
-
-function openLinkedMoveForm(x={}){const dlg=$('#movementDialog'),props=(showData.props||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),sets=(showData.setPieces||[]).slice().sort((a,b)=>a.name.localeCompare(b.name));$('#movementTitle').textContent=x.id?'Edit usage / movement':'Add usage / movement';$('#movementType').value=x.itemType||'prop';$('#movementProp').innerHTML=props.map(p=>`<option value="${p.id}" ${p.id===x.propId?'selected':''}>${esc(p.name)}${p.quantity>1?` ×${p.quantity}`:''}</option>`).join('');updateMovementPropTargets(x.propTargetType||'all',x.propTargetId||'');$('#movementSet').innerHTML=sets.map(p=>`<option value="${p.id}" ${p.id===x.setPieceId?'selected':''}>${esc(p.name)}</option>`).join('');$('#movementAct').innerHTML=actOptions().map(([v,l])=>`<option value="${v}" ${v===(x.act||sortedActs()[0]?.id)?'selected':''}>${esc(l)}</option>`).join('');$('#movementScene').value=x.scene||'';$('#movementPage').value=x.page||'';$('#movementFrom').value=x.from||'';$('#movementTo').value=x.to||'';$('#movementNotation').value=x.notation||x.cue||'';$('#movementNotes').value=x.notes||'';$('#movementPeople').innerHTML=peopleChecksHTML(x.personIds||[]);$('#movementQuick').innerHTML=quickNotationHTML('movementNotation');bindNotationButtons($('#movementQuick'));dlg.dataset.editId=x.id||'';toggleMovementItemFields();dlg.showModal();}
-function toggleMovementItemFields(){const isSet=$('#movementType').value==='set';$('#movementPropGroup').hidden=isSet;$('#movementPropTargetGroup').hidden=isSet;$('#movementSetGroup').hidden=!isSet;}
-function updateMovementPropTargets(type='all',id=''){const p=productionPropById($('#movementProp').value),sel=$('#movementPropTarget');if(!sel)return;const opts=[['all','',p?.quantity>1?`All ${p.quantity} items`:'Whole prop'],...(propGroupsFor(p?.id).map(g=>['group',g.id,`Group: ${g.name}`])),...((p?.instances||[]).map(i=>['instance',i.id,`Instance ${i.label}`]))];sel.innerHTML=opts.map(([t,v,l])=>`<option value="${t}|${v}" ${(t===type&&v===id)?'selected':''}>${esc(l)}</option>`).join('');}
-async function saveLinkedMoveForm(){const id=$('#movementDialog').dataset.editId,row=id?showData.movements.find(x=>x.id===id):null,type=$('#movementType').value,prop=productionPropById($('#movementProp').value),target=($('#movementPropTarget')?.value||'all|').split('|'),data={itemType:type,propId:type==='prop'?$('#movementProp').value:'',propName:type==='prop'?(prop?.name||''):'',propTargetType:type==='prop'?target[0]:'all',propTargetId:type==='prop'?(target[1]||''):'',setPieceId:type==='set'?$('#movementSet').value:'',act:$('#movementAct').value,scene:$('#movementScene').value,page:$('#movementPage').value,personIds:selectedPeopleFrom($('#movementPeople')),person:'',from:$('#movementFrom').value,to:$('#movementTo').value,notation:$('#movementNotation').value,cue:$('#movementNotation').value,notes:$('#movementNotes').value,updatedAt:now()};if(type==='prop'&&!data.propId)throw new Error('Choose a prop.');if(type==='set'&&!data.setPieceId)throw new Error('Choose a set piece.');if(row)Object.assign(row,data);else showData.movements.push({id:newUUID(),order:99999,...data});await saveShow();$('#movementDialog').close();renderManage();}
+function openPropForm(x={}){const res=x.id?reservationForProp(x.id):null,assets=(workspaceData.inventory||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)),assetOpts=[['','Production-only / not shared'],...assets.map(a=>[a.id,`${a.name}${a.trackingMode==='bulk'?` (qty ${a.quantity})`:''}`])];openForm(x.id?'Edit prop':'Add prop',[['name','Name','text',x.name||''],['notes','Notes','textarea',x.notes||''],['ready','Ready / acquired','checkbox',!!x.ready],['review','Needs review','checkbox',!!x.review],['assetId','Shared inventory asset','select',x.assetId||'',assetOpts],['reserveQty','Quantity reserved','number',String(res?.quantity||1)],['reserveStart','Needed from','date',res?.startDate||showData.production.startDate||''],['reserveEnd','Needed through','date',res?.endDate||showData.production.endDate||'']],async vals=>{if(!vals.name.trim())throw new Error('Prop name is required.');if(vals.reserveStart&&vals.reserveEnd&&vals.reserveEnd<vals.reserveStart)throw new Error('Reservation end date cannot be before start date.');let prop=x;if(x.id){Object.assign(prop,{name:vals.name,notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()});}else{prop={id:newUUID(),sourcePage:'',sourceRow:'',name:vals.name,notes:vals.notes,ready:vals.ready,review:vals.review,assetId:vals.assetId||null,updatedAt:now()};showData.props.push(prop);}for(const m of showData.movements)if(m.propId===prop.id)m.propName=prop.name;workspaceData.reservations=workspaceData.reservations.filter(r=>!(r.productionId===showData.production.id&&r.productionPropId===prop.id));if(prop.assetId){const asset=inventoryById(prop.assetId),qty=asset?.trackingMode==='unique'?1:Math.max(1,Number(vals.reserveQty||1));workspaceData.reservations.push({id:res?.id||newUUID(),assetId:prop.assetId,productionId:showData.production.id,productionPropId:prop.id,quantity:qty,startDate:vals.reserveStart||'',endDate:vals.reserveEnd||'',notes:'',updatedAt:now()});}await saveShow();renderManage();});}
 
 function imageScopeList(scope) {
   return allImageMeta().filter(x => x.scope === scope && x.hidden !== true);
@@ -838,7 +671,7 @@ function mergeById(local=[], incoming=[]) {
   return [...map.values()];
 }
 
-function mergeShow(a,b){const areaPhotos={...(a.areaPhotos||{})};for(const [k,v] of Object.entries(b.areaPhotos||{})){const cur=areaPhotos[k];if(!cur||Date.parse(v.updatedAt||0)>=Date.parse(cur.updatedAt||0))areaPhotos[k]=v;}return ensureShowStructure({...a,production:{...(a.production||{}),...(b.production||{})},acts:mergeById(a.acts||[],b.acts||[]),locations:mergeById(a.locations||[],b.locations||[]),people:mergeById(a.people||[],b.people||[]),props:mergeById(a.props||[],b.props||[]),movements:mergeById(a.movements||[],b.movements||[]),presets:mergeById(a.presets||[],b.presets||[]),setPieces:mergeById(a.setPieces||[],b.setPieces||[]),blocking:mergeById(a.blocking||[],b.blocking||[]),propGroups:mergeById(a.propGroups||[],b.propGroups||[]),images:mergeImageMeta(a.images||{},b.images||{}),areaPhotos,attendance:{...(a.attendance||{}),...(b.attendance||{})},checks:{...(a.checks||{}),...(b.checks||{})},settings:{...(a.settings||{}),...(b.settings||{})},appVersion:APP_VERSION});}
+function mergeShow(a,b){const areaPhotos={...(a.areaPhotos||{})};for(const [k,v] of Object.entries(b.areaPhotos||{})){const cur=areaPhotos[k];if(!cur||Date.parse(v.updatedAt||0)>=Date.parse(cur.updatedAt||0))areaPhotos[k]=v;}return ensureShowStructure({...a,production:{...(a.production||{}),...(b.production||{})},acts:mergeById(a.acts||[],b.acts||[]),locations:mergeById(a.locations||[],b.locations||[]),people:mergeById(a.people||[],b.people||[]),props:mergeById(a.props||[],b.props||[]),movements:mergeById(a.movements||[],b.movements||[]),presets:mergeById(a.presets||[],b.presets||[]),images:mergeImageMeta(a.images||{},b.images||{}),areaPhotos,attendance:{...(a.attendance||{}),...(b.attendance||{})},checks:{...(a.checks||{}),...(b.checks||{})},settings:{...(a.settings||{}),...(b.settings||{})},appVersion:APP_VERSION});}
 function mergeWorkspace(a,b){a=ensureWorkspaceStructure(a);b=ensureWorkspaceStructure(b);const prodMap=new Map(a.productions.map(p=>[p.production.id,p]));for(const p of b.productions){const cur=prodMap.get(p.production.id);prodMap.set(p.production.id,cur?mergeShow(cur,p):p);}return ensureWorkspaceStructure({...a,productions:[...prodMap.values()],people:mergeById(a.people||[],b.people||[]),inventory:mergeById(a.inventory||[],b.inventory||[]),reservations:mergeById(a.reservations||[],b.reservations||[])});}
 
 async function resetSeed(){const starter=clone(starterWorkspace.productions?.[0]);if(!starter)return;if(!confirm('Restore the bundled Peter and the Starcatcher production? Other productions and shared inventory will stay.'))return;const existing=productionById(starter.production.id);if(existing){const i=workspaceData.productions.indexOf(existing);workspaceData.productions[i]=starter;}else workspaceData.productions.push(starter);for(const gp of starterWorkspace.people||[])if(!workspaceData.people.some(x=>x.id===gp.id))workspaceData.people.push(gp);workspaceData.activeProductionId=starter.production.id;setActiveRefs();await saveWorkspace();$('#productionTitle').textContent=showData.production.title;renderBackup();}

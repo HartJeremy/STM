@@ -1,11 +1,21 @@
-# Stage Manager Workspace
+# Stage Manager Workspace v0.6.0
 
-Application package for Peter & The Starcatcher stage management.
+This build adds the Supabase project connection and the first relational database schema.
 
-## Show-call timer
+## Supabase setup
 
-The header Timer opens one-tap 5, 10, and 15 minute countdowns. Timers call **5 MINUTES TO PLACES** at five minutes remaining and **PLACES** at zero, using an in-app visual call plus sound/vibration and browser notifications when permission is available.
+1. Open Supabase -> SQL Editor.
+2. Run the entire `supabase-schema.sql` file once.
+3. Deploy the PWA files to GitHub Pages.
+4. Open Stage Manager -> Manage -> Database.
+5. Click **Test connection**. It should report `Database connection successful`.
 
+The browser build contains only the Supabase project URL and publishable key. Do not place a secret key, service_role key, database password, or JWT secret in this repository.
 
-## Prop quantity, instances and groups
-Props now support a master quantity, automatically generated physical instances with unique IDs, reusable instance groups, and usage records that can target the whole prop, a group, or one physical instance.
+## Migration state
+
+v0.6.0 intentionally keeps IndexedDB as the operational source of truth while the new relational schema is verified. It does not yet push/overwrite the Starcatcher workspace in Supabase. The next migration step is authenticated workspace sync and import of the current UUID-preserving Starcatcher data.
+
+## Runtime files
+
+The deployment no longer includes the original Starcatcher Word/Excel source documents. The built-in production seed is `data/seed-workspace.json`.
