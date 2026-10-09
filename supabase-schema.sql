@@ -1,4 +1,4 @@
--- Stage Manager Workspace - Supabase schema v0.6
+-- Stage Manager Workspace - Supabase schema v0.7
 -- Run this once in Supabase -> SQL Editor.
 -- The browser app uses only the publishable key. Never expose a secret/service_role key.
 
@@ -238,6 +238,16 @@ create table if not exists public.preset_area_photos (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.preset_checks (
+  id uuid primary key,
+  production_id uuid not null references public.productions(id) on delete cascade,
+  preset_id uuid not null references public.presets(id) on delete cascade,
+  check_date date not null,
+  checked boolean not null default false,
+  updated_at timestamptz not null default now(),
+  unique(production_id, preset_id, check_date)
+);
+
 -- RLS
 alter table public.workspaces enable row level security;
 alter table public.workspace_members enable row level security;
@@ -256,6 +266,7 @@ alter table public.calls enable row level security;
 alter table public.attendance enable row level security;
 alter table public.production_images enable row level security;
 alter table public.preset_area_photos enable row level security;
+alter table public.preset_checks enable row level security;
 
 -- Workspace policies
  drop policy if exists "workspace select" on public.workspaces;
@@ -291,7 +302,7 @@ END $$;
 DO $$
 DECLARE t text;
 BEGIN
-  FOREACH t IN ARRAY ARRAY['production_people','acts','production_locations','production_assets','prop_usages','presets','calls','production_images','preset_area_photos'] LOOP
+  FOREACH t IN ARRAY ARRAY['production_people','acts','production_locations','production_assets','prop_usages','presets','calls','production_images','preset_area_photos','preset_checks'] LOOP
     EXECUTE format('drop policy if exists "production member all" on public.%I', t);
     EXECUTE format('create policy "production member all" on public.%I for all to authenticated using (exists (select 1 from public.productions p where p.id = %I.production_id and public.is_workspace_member(p.workspace_id))) with check (exists (select 1 from public.productions p where p.id = %I.production_id and public.is_workspace_member(p.workspace_id)))', t, t, t);
   END LOOP;
@@ -315,3 +326,5 @@ create index if not exists idx_production_assets_prod_name on public.production_
 create index if not exists idx_prop_usages_prod_page on public.prop_usages(production_id, page);
 create index if not exists idx_prop_usages_person on public.prop_usages(person_id);
 create index if not exists idx_reservations_asset_dates on public.asset_reservations(asset_id, start_date, end_date);
+
+create index if not exists idx_preset_checks_prod_date on public.preset_checks(production_id, check_date);

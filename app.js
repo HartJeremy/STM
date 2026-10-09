@@ -1,4 +1,4 @@
-const APP_VERSION = '0.6.2';
+const APP_VERSION = '0.7.0';
 const DB_NAME = 'starcatcher-sm';
 const DB_VERSION = 3;
 const WORKSPACE_KEY = 'workspace-v5';
@@ -194,7 +194,9 @@ function ensureWorkspaceStructure(ws){
   if(!Array.isArray(ws.productions))ws.productions=[]; if(!Array.isArray(ws.people))ws.people=[]; if(!Array.isArray(ws.inventory))ws.inventory=[]; if(!Array.isArray(ws.reservations))ws.reservations=[];
   ws.productions=ws.productions.map(ensureShowStructure); for(const p of ws.people)p.id ||= newUUID(); for(const a of ws.inventory){a.id ||= newUUID();a.trackingMode ||= 'unique';a.quantity=Math.max(1,Number(a.quantity||1));} for(const r of ws.reservations)r.id ||= newUUID();
   if(!ws.activeProductionId || !ws.productions.some(p=>p.production.id===ws.activeProductionId))ws.activeProductionId=ws.productions[0]?.production.id||'';
-  ws.updatedAt=now(); return ws;
+  ws.syncMeta ||= {enabled:false,lastSyncedAt:'',lastSyncError:'',remoteWorkspaceId:'',callIds:{},attendanceIds:{}};
+  ws.syncMeta.callIds ||= {}; ws.syncMeta.attendanceIds ||= {};
+  ws.updatedAt ||= now(); return ws;
 }
 
 function seedMatchByLegacy(seedRows,oldId){ return (seedRows||[]).find(x=>x.legacyId===oldId || x.id===oldId) || null; }
@@ -253,6 +255,10 @@ async function init() {
     await setKV(WORKSPACE_KEY,workspaceData);
   } else workspaceData=ensureWorkspaceStructure(workspaceData);
   setActiveRefs(); if(!showData){workspaceData=clone(starterWorkspace);setActiveRefs();await setKV(WORKSPACE_KEY,workspaceData);}
+  if (typeof cloudStartup === 'function') {
+    try { await cloudStartup(); } catch (err) { console.warn('Cloud startup skipped', err); }
+    setActiveRefs();
+  }
   $('#productionTitle').textContent=showData.production?.title||'Stage Manager'; bindShell(); route('tonight'); registerSW();
 }
 
@@ -272,6 +278,7 @@ function bindShell() {
   });
   $('#imageFile').addEventListener('change', handleImageFile);
   $('#importFile').addEventListener('change', handleImportFile);
+  window.addEventListener('online', () => { if (typeof scheduleCloudSync === 'function') scheduleCloudSync('online'); });
 
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
@@ -516,21 +523,13 @@ function openAssetForm(asset={}){openForm(asset.id?'Edit shared asset':'Add shar
 async function deleteAsset(id){const asset=inventoryById(id);if(!asset)return;const rs=(workspaceData.reservations||[]).filter(r=>r.assetId===id);if(rs.length){alert(`${asset.name} has ${rs.length} production reservation(s). Unlink those production props first.`);return;}if(!confirm(`Delete shared asset ${asset.name}?`))return;workspaceData.inventory=workspaceData.inventory.filter(a=>a.id!==id);await saveWorkspace();renderManage();}
 
 async function getSupabaseStatus(){
-  const client=window.supabaseClient;
-  if(!client)return {ok:false,message:'Supabase client is not available. Check your connection and configuration.'};
-  try{
-    const {data,error}=await client.from('app_health').select('message,created_at').limit(1);
-    if(error)throw error;
-    const {data:sessionData}=await client.auth.getSession();
-    return {ok:true,message:data?.[0]?.message||'Supabase connected.',signedIn:!!sessionData?.session,email:sessionData?.session?.user?.email||''};
-  }catch(err){return {ok:false,message:err?.message||String(err)};}
+  if (typeof cloudConnectionStatus === 'function') return cloudConnectionStatus();
+  return {ok:false,message:'Cloud sync module is not loaded.'};
 }
 
 function renderManageDatabase(){
-  const cfg=window.STM_SUPABASE||{};
-  manageBody(`<section class="manage-section"><div class="manage-section-head"><strong>Supabase database</strong><span id="dbStatusTag" class="tag review">checking</span></div><div style="padding:14px"><div class="filemeta"><strong>Project</strong><br>${esc(cfg.url||'Not configured')}</div><div id="dbStatus" class="notice" style="margin-top:12px"><strong>Checking connection…</strong></div><div class="toolbar" style="margin-top:12px"><button id="testDatabase" class="btn secondary compact">Test connection</button></div><div class="smalltext muted" style="margin-top:12px">The app is connected to the Supabase project configuration, but v0.6 still treats IndexedDB as the operational source while the relational migration is being verified. Run <code>supabase-schema.sql</code> once in the Supabase SQL Editor before migrating production data.</div></div></section>`);
-  const paint=async()=>{const box=$('#dbStatus'),tag=$('#dbStatusTag');if(!box||!tag)return;box.innerHTML='<strong>Checking connection…</strong>';tag.textContent='checking';tag.className='tag review';const st=await getSupabaseStatus();if(st.ok){box.className='notice oknotice';box.innerHTML=`<strong>Database connection successful.</strong><div class="smalltext">${esc(st.message)}${st.signedIn?` · Signed in as ${esc(st.email)}`:' · No user signed in yet.'}</div>`;tag.textContent='connected';tag.className='tag critical';}else{box.className='notice';box.innerHTML=`<strong>Database not ready.</strong><div class="smalltext">${esc(st.message)}</div>`;tag.textContent='setup needed';tag.className='tag review';}};
-  $('#testDatabase').addEventListener('click',paint);paint();
+  if (typeof renderCloudDatabasePanel === 'function') return renderCloudDatabasePanel();
+  manageBody('<div class="notice"><strong>Cloud sync module is not loaded.</strong></div>');
 }
 
 function renderManage(){setPageTitle('Manage');const tabs=[['production','Production'],['people','People'],['locations','Locations'],['presets','Presets'],['run','Run'],['props','Props'],['inventory','Inventory'],['images','Images'],['database','Database'],['backup','Backup']];$('#view').innerHTML=`<div class="manage-tabs">${tabs.map(([k,l])=>`<button class="manage-tab ${manageTab===k?'active':''}" data-manage-tab="${k}">${l}</button>`).join('')}</div><div id="manageBody"></div>`;$$('[data-manage-tab]').forEach(b=>b.addEventListener('click',()=>{manageTab=b.dataset.manageTab;renderManage();}));if(manageTab==='production')renderManageProduction();else if(manageTab==='people')renderManagePeople();else if(manageTab==='locations')renderManageLocations();else if(manageTab==='presets')renderManagePresets();else if(manageTab==='run')renderManageRun();else if(manageTab==='props')renderManageProps();else if(manageTab==='inventory')renderManageInventory();else if(manageTab==='images')renderManageImages();else if(manageTab==='database')renderManageDatabase();else renderBackup();}
@@ -677,7 +676,7 @@ function mergeWorkspace(a,b){a=ensureWorkspaceStructure(a);b=ensureWorkspaceStru
 async function resetSeed(){const starter=clone(starterWorkspace.productions?.[0]);if(!starter)return;if(!confirm('Restore the bundled Peter and the Starcatcher production? Other productions and shared inventory will stay.'))return;const existing=productionById(starter.production.id);if(existing){const i=workspaceData.productions.indexOf(existing);workspaceData.productions[i]=starter;}else workspaceData.productions.push(starter);for(const gp of starterWorkspace.people||[])if(!workspaceData.people.some(x=>x.id===gp.id))workspaceData.people.push(gp);workspaceData.activeProductionId=starter.production.id;setActiveRefs();await saveWorkspace();$('#productionTitle').textContent=showData.production.title;renderBackup();}
 
 async function saveShow(){showData=ensureShowStructure(showData);showData.production.updatedAt=now();showData.appVersion=APP_VERSION;const idx=workspaceData.productions.findIndex(p=>p.production.id===showData.production.id);if(idx>=0)workspaceData.productions[idx]=showData;else workspaceData.productions.push(showData);workspaceData.activeProductionId=showData.production.id;checks=showData.checks;await saveWorkspace();}
-async function saveWorkspace(){workspaceData=ensureWorkspaceStructure(workspaceData);workspaceData.appVersion=APP_VERSION;workspaceData.updatedAt=now();await setKV(WORKSPACE_KEY,workspaceData);}
+async function saveWorkspace(){workspaceData=ensureWorkspaceStructure(workspaceData);workspaceData.appVersion=APP_VERSION;workspaceData.updatedAt=now();await setKV(WORKSPACE_KEY,workspaceData);if(typeof scheduleCloudSync==='function')scheduleCloudSync('local-change');}
 
 async function registerSW() {
   if('serviceWorker' in navigator){try{await navigator.serviceWorker.register('./sw.js')}catch(err){console.warn('Service worker registration failed',err);}}

@@ -1,26 +1,34 @@
-# Stage Manager Workspace v0.6.0
+# Stage Manager Workspace v0.7.0
 
-This build adds the Supabase project connection and the first relational database schema.
+Multi-production stage-management PWA with Supabase relational sync and IndexedDB offline cache.
 
-## Supabase setup
+## v0.7 database migration
 
-1. Open Supabase -> SQL Editor.
-2. Run the entire `supabase-schema.sql` file once.
-3. Deploy the PWA files to GitHub Pages.
-4. Open Stage Manager -> Manage -> Database.
-5. Click **Test connection**. It should report `Database connection successful`.
+1. In Supabase -> SQL Editor, run `supabase-schema.sql` from this package. It is idempotent and adds the v0.7 `preset_checks` table/policies.
+2. Deploy this package to GitHub Pages.
+3. Open the app -> Manage -> Database.
+4. Create a Supabase Auth account or sign in.
+5. Click **Upload this workspace to Supabase** once. Existing production/entity UUIDs are preserved.
+6. After migration, normal structured-data changes are saved locally first and synced to Supabase when online.
 
-The browser build contains only the Supabase project URL and publishable key. Do not place a secret key, service_role key, database password, or JWT secret in this repository.
+## Data synchronized in v0.7
 
-## Migration state
+- workspaces and productions
+- people and production assignments
+- acts and production locations
+- shared inventory and reservations
+- production props
+- prop usage/movement records
+- presets and nightly preset checks
+- calls and attendance
+- image metadata and preset photo assignments
 
-v0.6.0 intentionally keeps IndexedDB as the operational source of truth while the new relational schema is verified. It does not yet push/overwrite the Starcatcher workspace in Supabase. The next migration step is authenticated workspace sync and import of the current UUID-preserving Starcatcher data.
+Custom/replaced image BLOBs are still stored locally in IndexedDB in v0.7. Their metadata is synchronized, but cloud image-file storage is planned separately.
 
-## Runtime files
+## Offline behavior
 
-The deployment no longer includes the original Starcatcher Word/Excel source documents. The built-in production seed is `data/seed-workspace.json`.
+IndexedDB remains the immediate working copy. If the device is offline, edits remain local. When connectivity returns and the user is signed in with cloud sync enabled, the app schedules a Supabase sync.
 
-## Deployment verification for v0.6.2
+## Security
 
-After deploying, the top bar must show `v0.6.2` and Manage must include a `Database` tab.
-If either is missing, the browser/service worker is still serving an older build or the wrong files were deployed.
+The browser contains only the Supabase project URL and publishable key. Production data tables use Row Level Security and require an authenticated workspace member. Never place a Supabase secret/service-role key in this PWA.
